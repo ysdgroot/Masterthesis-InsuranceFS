@@ -157,30 +157,36 @@ partialSaveName <- NULL
 # upperBoundPred : when dealing with (strictly positive) continuous data, it is better to sometimes just truncate the predictions, to avoid values that do not 
 # make economical sense. The default value is NULL, meaning that there is no truncation applied to the predictions.
 
-functionGA <- function(inputDT, varsGA, nModsGen, nGens, nCrossOverGen, nMutsGen,
-                       nVarInit, nVarMax, nRedMods = 5, trainPerc = 0.8, testPerc = NULL,
-                       distMod = 'poisson', 
-                       nAddedBestModsGen = rep(5, nGens), valOffSet = 'exposure',
+
+functionGA <- function(inputDT, 
+                       varsGA, 
+                       nModsGen, 
+                       nGens, 
+                       nCrossOverGen, 
+                       nMutsGen,
+                       nVarInit, 
+                       nVarMax, 
+                       nRedMods = 5, 
+                       trainPerc = 0.8, 
+                       testPerc = NULL,
+                       distMod = poisson(link='log'), 
+                       nAddedBestModsGen = rep(5, nGens), 
+                       valOffSet = 'exposure',
                        nMinInOptModsGen = NULL, 
-                       includeIntsGen = NULL, nModsIntGen = NULL, nMaxIntGen = NULL, 
-                       saveStatus = TRUE, partialSaveName = NULL, 
+                       includeIntsGen = NULL, 
+                       nModsIntGen = NULL, 
+                       nMaxIntGen = NULL, 
+                       saveStatus = TRUE, 
+                       partialSaveName = NULL, 
                        statusList = NULL,
                        typeThreshold = NULL,
                        ratioConcProbMSE = NULL,
-                       upperBoundPred = NULL, badOnes = NULL){
+                       upperBoundPred = NULL, 
+                       badOnes = NULL){
   
   nModelsInit <- nModsGen[1]
-  
-  #TODO: make it that it is given to the function what distribution needs to be given, so that we can chose it, like a tweedie if necessary
-  if(distMod == 'poisson'){
-    distMod <- poisson(link='log')
-  } else if (distMod== 'gamma'){
-    distMod <- Gamma(link = 'log')
-  } else if (distMod == 'gaussian'){
-    distMod <- gaussian(link = 'identity')
-  } else if (distMod == 'binomial'){
-    distMod <- binomial(link = "logit")
-  } else {
+
+  if(!(distMod$family %in% c("poisson", "Gamma", "gaussian", "binomial"))){
     stop('distMod should be poisson, gamma, gaussian or binomial.')
   }
   
@@ -240,7 +246,7 @@ functionGA <- function(inputDT, varsGA, nModsGen, nGens, nCrossOverGen, nMutsGen
     
   #if not enough obs: test and training sample are the same
   varLevs <- extractLevelDT(inputDT[,.SD,.SDcol = c(unique(c(unlist(strsplit(unlist(varsGA), '[*]')))))])
-  nMaxVarLevs <- max(unlist(llply(1:100000, function(xx) sum(length(unlist(varLevs[sample(1:length(c(varsGA)), nVarMax)]))) - 1))*5)
+  nMaxVarLevs <- max(unlist(llply(1:1e5, function(xx) sum(length(unlist(varLevs[sample(1:length(c(varsGA)), nVarMax)]))) - 1))*5)
   if(nrow(inputDT)*trainPerc*1.05 < (nMaxVarLevs)){ # * 1.05 to create a small margin
     trainPerc <- 1
     cat('Not enough observations were observed for the number of levels that are considered, such that the test and training set are the same (trainPerc = testPerc = 1). \n') 
@@ -268,10 +274,14 @@ functionGA <- function(inputDT, varsGA, nModsGen, nGens, nCrossOverGen, nMutsGen
       testSamp <- 1:nrow(inputDT)
     } else if (is.null(testPerc)){ 
       trainSamp <- sample(1:nrow(inputDT), trainPerc*nrow(inputDT))
-      testSamp <- createTestSet(inputDT[,.SD,.SDcol = unique(c(unlist(strsplit(unlist(varsGA), '[*]'))))], trainSamp, lengthTestSamp = (nrow(inputDT) - length(trainSamp)))
+      testSamp <- createTestSet(inputDT[,.SD,.SDcol = unique(c(unlist(strsplit(unlist(varsGA), '[*]'))))], 
+                                trainSamp, 
+                                lengthTestSamp = (nrow(inputDT) - length(trainSamp)))
     } else { 
       trainSamp <- sample(1:nrow(inputDT), trainPerc*nrow(inputDT))
-      testSamp <- createTestSet(inputDT[,.SD,.SDcol = unique(c(unlist(strsplit(unlist(varsGA), '[*]'))))], trainSamp, lengthTestSamp = testPerc*nrow(inputDT))
+      testSamp <- createTestSet(inputDT[,.SD,.SDcol = unique(c(unlist(strsplit(unlist(varsGA), '[*]'))))], 
+                                trainSamp, 
+                                lengthTestSamp = testPerc*nrow(inputDT))
     }
 		
     '%notin%' <- Negate('%in%')

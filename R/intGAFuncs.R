@@ -2,10 +2,36 @@
 
 #addInt can be NULL and then interaction terms are never taken into account, but if no interaction terms are selected, it is equal to FALSE and the fit function without interaction terms is applied.
 
-iterGA <- function(inputDT, varsGA, matFit, concProb, nCrossOver, nMuts, nMods, nVarMax, nRedMods, trainPerc, testPerc, 
-                   distMod, iGen, prevMods, nAddedBestMods, valOffSet,
-                   nMinInOptMods, addInt, nModsInt, nMaxInt, prevInts,
-                   MSEFull, MSENull, MSEFullNew, CPFull, CPNull, CPFullNew, ratioConcProbMSE, upperBoundPred, badOnes = NULL){
+iterGA <- function(inputDT, 
+                   varsGA,
+                   matFit, 
+                   concProb, 
+                   nCrossOver, 
+                   nMuts, 
+                   nMods, 
+                   nVarMax, 
+                   nRedMods, 
+                   trainPerc, 
+                   testPerc,
+                   distMod, 
+                   iGen, 
+                   prevMods, 
+                   nAddedBestMods, 
+                   valOffSet,
+                   nMinInOptMods, 
+                   addInt, 
+                   nModsInt, 
+                   nMaxInt, 
+                   prevInts,
+                   MSEFull, 
+                   MSENull, 
+                   MSEFullNew, 
+                   CPFull, 
+                   CPNull, 
+                   CPFullNew, 
+                   ratioConcProbMSE, 
+                   upperBoundPred, 
+                   badOnes = NULL){
   
   
   # the number of models for each iteration can be vary and at the end of the iteration it is decide how many models from 
@@ -176,7 +202,9 @@ iterGA <- function(inputDT, varsGA, matFit, concProb, nCrossOver, nMuts, nMods, 
   }
 }
 
-getReprod <- function(matBin, concProb, minValWgt){
+getReprod <- function(matBin, 
+                      concProb, 
+                      minValWgt){
   
   nVar <- ncol(matBin)
   nStartMods <- nrow(matBin)
@@ -188,17 +216,24 @@ getReprod <- function(matBin, concProb, minValWgt){
   
   # computation of the weights for the reproduction phase based on the concProb
 	
-  maxConcProb <- sapply(unlist(concProb), function(xx){max(xx, minValWgt)})
+  maxConcProb <- sapply(unlist(concProb), 
+                        function(xx){max(xx, minValWgt)})
   denomWgt <- sum(maxConcProb - minValWgt)
-  wgts <- sapply((maxConcProb - minValWgt)/denomWgt, function(xx){max(xx,0)}) 
+  wgts <- sapply((maxConcProb - minValWgt)/denomWgt, 
+                 function(xx){max(xx,0)}) 
   
   # reproduction step
-  selIndsAll <- sample(1:nStartMods, nStartMods, replace = TRUE, prob = wgts)
+  selIndsAll <- sample(1:nStartMods, 
+                       nStartMods, 
+                       replace = TRUE, 
+                       prob = wgts)
   
   # if a given model influences the convergence too much, this can be attempted
   # selIndsAll <- order(wgts, decreasing = TRUE)
   
-  return(list(matReprod = matBin[selIndsAll,], concProbWgts = as.list(wgts), varSamp = varSamp))
+  return(list(matReprod = matBin[selIndsAll,], 
+              concProbWgts = as.list(wgts), 
+              varSamp = varSamp))
 
 }
     
@@ -209,7 +244,8 @@ getCrossOver <- function(matBin, nSplit){
   
   #getting random splits for each couple of models
   sampledWgts <- matBin
-  splits <- llply(as.list(rep(nVar, nStartMods/2)), function(xx){sort(sample(1:xx, nSplit))})
+  splits <- llply(as.list(rep(nVar, nStartMods/2)), 
+                  function(xx){sort(sample(1:xx, nSplit))})
   
   matCrossOver <- matrix(rep(0, nStartMods*nVar), ncol = nVar)
   for(iMod in 0:((nStartMods/2) - 1)){
@@ -241,7 +277,22 @@ getMut <- function(mat, nMut){
   return(mat)
 }
 
-getFitMain <- function(inputDT, mods, nVarMax, nRedMods, trainPerc, testPerc, distMod, valOffSet, MSEFull, MSENull, MSEFullNew, CPFull, CPNull, CPFullNew, ratioConcProbMSE, upperBoundPred){
+getFitMain <- function(inputDT, 
+                       mods, 
+                       nVarMax, 
+                       nRedMods, 
+                       trainPerc, 
+                       testPerc, 
+                       distMod, 
+                       valOffSet, 
+                       MSEFull, 
+                       MSENull, 
+                       MSEFullNew, 
+                       CPFull, 
+                       CPNull, 
+                       CPFullNew, 
+                       ratioConcProbMSE, 
+                       upperBoundPred){
   
   # defining test and training set
   if(trainPerc == 1){
@@ -249,10 +300,16 @@ getFitMain <- function(inputDT, mods, nVarMax, nRedMods, trainPerc, testPerc, di
     testSamp <- 1:nrow(inputDT)
   } else if (is.null(testPerc)){ 
     trainSamp <- sample(1:nrow(inputDT), trainPerc*nrow(inputDT))
-    testSamp <- createTestSet(inputDT[,.SD,.SDcol = unique(c(unlist(strsplit(unlist(mods), '[*]'))))], trainSamp, lengthTestSamp = (nrow(inputDT) - length(trainSamp)))
+    testSamp <- createTestSet(inputDT[,.SD,
+                                      .SDcol = unique(c(unlist(strsplit(unlist(mods), '[*]'))))], 
+                              trainSamp, 
+                              lengthTestSamp = (nrow(inputDT) - length(trainSamp)))
   } else { 
     trainSamp <- sample(1:nrow(inputDT), trainPerc*nrow(inputDT))
-    testSamp <- createTestSet(inputDT[,.SD,.SDcol = unique(c(unlist(strsplit(unlist(mods), '[*]'))))], trainSamp, lengthTestSamp = testPerc*nrow(inputDT))
+    testSamp <- createTestSet(inputDT[,.SD,
+                                      .SDcol = unique(c(unlist(strsplit(unlist(mods), '[*]'))))], 
+                              trainSamp, 
+                              lengthTestSamp = testPerc*nrow(inputDT))
   }
   
   # defining some vars that will be used later on
@@ -269,8 +326,18 @@ getFitMain <- function(inputDT, mods, nVarMax, nRedMods, trainPerc, testPerc, di
       
       form <- getForm(distMod, unique(c(modsDown[[iModDown]], unlist(strsplit(modsDown[[iModDown]], '[*]')))), offset = valOffSet)
       predModelDown <- getFitIter(form, distMod, inputDT, trainSamp, testSamp, upperBoundPred)$predModel
-	    tempDT <- inputDT[testSamp,.SD,.SDcol = which(names(inputDT) %in% c('obs', 'exposure'))][, predicted := predModelDown]
-      temp <- evalMod(distMod, tempDT, MSEFull = MSEFull, MSENull = MSENull, MSEFullNew = MSEFullNew, CPFull = CPFull, CPNull = CPNull, CPFullNew = CPFullNew, ratioConcProbMSE = ratioConcProbMSE)
+	    tempDT <- inputDT[testSamp,
+	                      .SD,
+	                      .SDcol = which(names(inputDT) %in% c('obs', 'exposure'))][, predicted := predModelDown]
+      temp <- evalMod(distMod, 
+                      tempDT, 
+                      MSEFull = MSEFull, 
+                      MSENull = MSENull, 
+                      MSEFullNew = MSEFullNew, 
+                      CPFull = CPFull, 
+                      CPNull = CPNull, 
+                      CPFullNew = CPFullNew, 
+                      ratioConcProbMSE = ratioConcProbMSE)
 	  
       concProb_res[iModDown] <- temp$res
       if(temp$MSEFullNew < MSEFullNew) MSEFullNew <- temp$MSEFullNew 
@@ -533,6 +600,33 @@ getForm <- function(distMod, varList, offset = NULL){
   return(form)
 }
 
+
+#TODO: implement this function
+getForm_v2 <- function(distMod, 
+                    targetVar, 
+                    varList,
+                    offset = NULL){
+  
+  linkFunc <- distMod$link
+  form <- paste0(targetVar, "~ ")
+  
+  if (!is.null(offset)){
+    form <- paste0(form, sprintf("offset(%s(%s)) + ",linkFunc, offset))
+  }
+  
+  if (length(unlist(varList)) > 0 ){
+    form <- paste0(form, paste0(unlist(varList), collapse = "+"))
+  } else {
+    form <- paste0(form, "1")
+  }
+  
+  form <- as.formula(form)
+  return(form)
+}
+
+
+
+
 #this function returns the fit of the model on the training set and the predictions on the test set.
 
 #form <- formNull
@@ -615,7 +709,15 @@ auto_concProb <- function(inputDT, type = 'bin', nu = 0){
   return(res)
 }
 
-evalMod <- function(distMod, inputDT, MSEFull, MSENull, MSEFullNew, CPFull, CPNull, CPFullNew, ratioConcProbMSE){
+evalMod <- function(distMod, 
+                    inputDT,
+                    MSEFull,
+                    MSENull, 
+                    MSEFullNew, 
+                    CPFull, 
+                    CPNull,
+                    CPFullNew,
+                    ratioConcProbMSE){
 
   if(distMod$family[1] == 'poisson' || distMod$family[1] == 'binomial'){
     
