@@ -91,8 +91,10 @@ functionGA <- function(inputDT,
                        ratioConcProbMSE = NULL,
                        upperBoundPred = NULL, 
                        badOnes = NULL, 
-                       observed =  "claimNumber"){
+                       observed =  "claimNumber", 
+                       seed = 739){
   
+    set.seed(seed)
   
   # Initializing and checks  ------------------------------------------------
   
@@ -142,19 +144,6 @@ functionGA <- function(inputDT,
   if(!all(diff(c(nModelsInit,nModsGen)) >= 0)){
     stop('Number of models should be decreasing : nModsGen[i] <= nModsGen[i-1]')
   }
-  
-  # for(iLengMod in 1:length(nModsGen)){
-  #   if(iLengMod == 1){
-  #     if(nModsGen[iLengMod] > nModelsInit){
-  #       stop('Number of model should be decreasing : nModsGen[1] <= nModelsInit')
-  #     }
-  #   }
-  #   else{
-  #     if(nModsGen[iLengMod] > nModsGen[iLengMod-1]){
-  #       stop('Number of model should be decreasing : nModsGen[counter] <= nModsGen[counter-1]')
-  #     }
-  #   }
-  # }
   
   checkLength(list(nAddedBestModsGen), nGens)
   

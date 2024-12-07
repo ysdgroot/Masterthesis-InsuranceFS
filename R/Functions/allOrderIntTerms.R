@@ -1,8 +1,8 @@
 #TODO: documentation of the function
 allOrderIntTerms <- function(variableNames, order = 2){
   # check on the variable m
-  if(m < 2 | m%%1 != 0){
-    stop("value of m should be equal or higher than 2 and a whole number")
+  if(m < 1 | m%%1 != 0){
+    stop("value of m should be equal or higher than 1 and a whole number")
   }
   
   # get all the combinations for each order
