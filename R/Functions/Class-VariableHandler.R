@@ -1,7 +1,6 @@
 library(methods)
 
 
-#TODO: exclusions of interactions, if exclusion of main, don't include it 
 # setRefClass returns a generator  
 variableHandler <- setRefClass("variableHandler", 
                       fields = list(variables = "character", 
@@ -23,7 +22,7 @@ variableHandler$methods(
     full_list <- c()
     for (m in 1:order){
       combinations <- combn(variables, m = m, simplify = FALSE) |> 
-        lapply(FUN = \(x)(paste(x, collapse = "*"))) |> 
+        lapply(FUN = \(x)(paste(x, collapse = ":"))) |> 
         unlist()
       
       full_list <- c(full_list, combinations)
@@ -32,7 +31,7 @@ variableHandler$methods(
     .self$all_variables <- full_list
     .self$length <- length(full_list)
   }, 
-  getVariables = function(coding){
+  getVariables = function(coding, withMain = FALSE){
     
     if(length(coding) != .self$length){
       stop(sprintf("Length of the coding is incorrect, it should have length %d", .self$length))
@@ -41,7 +40,15 @@ variableHandler$methods(
     if(!all(coding %in% c(0,1))){
       stop("It should only contain 0 and 1")
     }
-    return(.self$all_variables[coding == 1])
+    
+    selected_coding <- coding
+    if (withMain){
+      # update the coding based on the function
+      selected_coding <- .self$getCoding(variables = .self$all_variables[coding == 1], 
+                                         withMain = TRUE)
+    }
+    
+    return(.self$all_variables[selected_coding == 1])
   }, 
   getCoding = function(variables, withMain = FALSE){
     
@@ -52,7 +59,7 @@ variableHandler$methods(
     variables_select <- unique(variables)
     
     if(withMain){
-      main_variables <- strsplit(variables_select, "\\*" )  |> 
+      main_variables <- strsplit(variables_select, "\\:" )  |> 
         unlist() |> 
         unique()
       
@@ -66,15 +73,4 @@ variableHandler$methods(
     return(coding)
   } 
 )
-
-
-# -------------------------------------------------------------------------
-
-
-test_vh <- variableHandler$new(variables = c("Age", "Region", "Gender"), order = 2)
-
-test_vh$getCoding(c("Region", "Age*Region"), withMain = TRUE)
-test_vh$getCoding(c("Region", "Age*Region"), withMain = FALSE)
-
-
 
