@@ -132,3 +132,5 @@ GA_results <- functionGA(inputDT = trainDT,
 
 save.image(file.path("Data", "test_all.RData"))
 
+
+

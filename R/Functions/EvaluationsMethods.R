@@ -1,7 +1,7 @@
 
 #' Title
 #'
-#' @param testdata 
+#' @param testDT 
 #' @param model 
 #' @param col_observations 
 #' @param ... 
@@ -11,7 +11,7 @@
 #' @family evaluation functions
 #' 
 #' @export
-evaluation_concProb_binned <- function(testdata, 
+evaluation_concProb_binned <- function(testDT, 
                                         model, 
                                         col_observations = "observed", 
                                         ...){
@@ -20,12 +20,12 @@ evaluation_concProb_binned <- function(testdata,
 
     #get the results from the model. 
   predModel <- predict(model, 
-                       testdata, 
+                       testDT, 
                        type = 'response')
   
-  testdata[, predicted := predModel]
+  testDT[, predicted := predModel]
   
-  result <- concProb_bin_fast(testdata[[col_observations]], testdata$predicted)$concProb
+  result <- concProb_bin_fast(testDT[[col_observations]], testDT$predicted)$concProb
   
   return(list(result = result))
 }
@@ -39,7 +39,7 @@ evaluation_concProb_binned <- function(testdata,
 #' @family evaluation functions
 #' 
 #' @export
-evaluation_concProb_continous <- function(testdata, 
+evaluation_concProb_continous <- function(testDT, 
                                        model, 
                                        col_observations = "observed",
                                        nu = 0,
@@ -49,13 +49,13 @@ evaluation_concProb_continous <- function(testdata,
   
   #get the results from the model. 
   predModel <- predict(model, 
-                       testdata, 
+                       testDT, 
                        type = 'response')
   
-  testdata[, predicted := predModel]
+  testDT[, predicted := predModel]
   
-  result <- concProb_cont_fast(testdata[[col_observations]], 
-                              testdata$predicted, 
+  result <- concProb_cont_fast(testDT[[col_observations]], 
+                              testDT$predicted, 
                               nu = nu)$concProb
   
   return(list(result = result))
