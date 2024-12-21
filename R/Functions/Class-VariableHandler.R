@@ -1,6 +1,5 @@
 library(methods)
 
-
 # setRefClass returns a generator  
 variableHandler <- setRefClass("variableHandler", 
                       fields = list(variables = "character", 
