@@ -24,6 +24,14 @@ library(R6)
 
 R6::R6Class("VariableHandler", 
              public = list(
+#' Create the Variable Handler
+#'
+#' @param variables character (vector), with all the main variables used
+#' @param order numeric, the order for interactions. 
+#' if 1 no interactions are included, 2 are interactions between 2 variables included, 
+#' 3 are interactions between 3 variables included, etc.
+#'
+#' @returns R6 object
                initialize = function(variables, 
                                      order = 1){
                  # set default values
