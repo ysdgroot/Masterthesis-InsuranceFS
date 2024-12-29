@@ -1,61 +1,65 @@
+library(R6)
+library(sigmoid)
+
 #' Construction of the S-shaped and V-shaped transfer functions
 #'
-#' @field name character. 
-#' @field fun function. 
-#' @field type character. 
+#' @field name character. Name of the transfer function
+#' @field fun function. function to transform into values between 0 and 1
+#' @field type character, "S" or "V", if it is S-shaped or V-shaped transfer class
 #'
-#' @returns
+#' @returns R6 Class object of TransferFunction
 #' @export
-transferFunction <- setRefClass("transferFunction", 
-                                fields = list(name = "character",
-                                              fun = "function", 
-                                              type = "character"), 
-                                methods = list(
-                                  initialize = function(name, fun, type = "S"){
-                                    .self$name <- name 
-                                    .self$fun <- fun 
-                                    
-                                    if(!(type %in% c("S", "V"))){
-                                      stop(sprintf("Type should be 'S' or 'V' not %s", type))
-                                    }
-                                    .self$type <- type
-                                  }, 
-                                  transfer = function(x){
-                                    max_val <- max(x)
-                                    min_val <- min(x)
-                                    
-                                    if(max_val > 1 || min_val < 0){
-                                      stop("The values of x should 0 or 1")
-                                    }
-                                    
-                                    return(.self$fun(x))}, 
-                                  changePosition = function(x, velocity){
-                                    rand <- runif(length(x))
-                                    transferedy <- .self$transfer(velocity)
-                                    if(.self$type == "S"){
-                                      return(rand < transferedy)
-                                    } else if(.self$type == "V"){
-                                      return((rand < transferedy) * abs(x - 1) +
-                                               (rand >= transferedy) * x)
-                                    } else{ 
-                                      stop("Type is not correct")  
-                                    }
-                                  }
-                                ))
+R6::R6Class("TransferFunction", 
+            public = list(
 
-baseClassTransferFunctions <- list(S1 = list(FUN = function(x){sigmoid(x)}, 
-                                               type = "S"), 
-                                   S2 = list(FUN = function(x){sigmoid(x/2)}, 
-                                               type ="S"), 
-                                   S3 = list(FUN = function(x){sigmoid(2*x)}, 
-                                               type ="S"), 
-                                   V1 = list(FUN = function(x){abs(x)/(sqrt(1 + x**2))}, 
-                                             type = "V"),
-                                   V2 = list(FUN = function(x){abs(tanh(x))}, 
-                                             type = "V"),
-                                   V3 = list(FUN = function(x){abs(2*atan(pi * x /2)/pi)}, 
-                                             type = "V"))
+#' @param name character. Name of the transfer function
+#' @param fun function. function to transform into values between 0 and 1
+#' @param type character, "S" or "V", if it is S-shaped or V-shaped transfer class
+#'
+#' @returns R6 object 
+              initialize = function(name, 
+                                    fun, 
+                                    type = "S"){
+                private$name <- name 
+                private$fun <- fun 
+                
+                if(!(type %in% c("S", "V"))){
+                  stop(sprintf("Type should be 'S' or 'V' not %s", type))
+                }
+                private$type <- type
+              }, 
+#' Transfer the values 
+#'
+#' @param x vector or matrix to calculate the function on
+#'
+#' @returns results of function `fun`
+              transfer = function(x){
+                  return(self$fun(x))
+                }, 
+              
+#' Update the next positions based on the transfer functions
+#'
+#' @param x binary vector of current position
+#' @param velocity vector of the next position which is also called the velocity. 
+#' based on the velocity the next binary positions are produced  
+#'
+#' @returns transfer the final results
+              changePosition = function(x, velocity){
+                rand <- runif(length(x))
+                transferedy <- self$transfer(velocity)
+                if(private$type == "S"){
+                  return(rand < transferedy)
+                } else if(private$type == "V"){
+                  return((rand < transferedy) * abs(x - 1) +
+                           (rand >= transferedy) * x)
+                } else{ 
+                  stop("Type is not correct")  
+                }
+              }
+              
+            ), 
+            private = list(name = NULL,
+                           fun = NULL, 
+                           type = NULL)) -> TransferFunction
 
-#TODO: transform the list into the different objects 
 
-t <- transferFunction$new("S1",baseClassTransferFunctions$S1$FUN,baseClassTransferFunctions$S1$type)
