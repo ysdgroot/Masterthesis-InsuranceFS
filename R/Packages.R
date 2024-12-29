@@ -8,3 +8,7 @@ library(fastConcProb)
 library(speedglm)
 
 library(CASdatasets)
+
+library(memoise) 
+library(parallel)
+library(doParallel)
