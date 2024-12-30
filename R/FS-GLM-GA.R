@@ -25,17 +25,15 @@ sapply(list.files(file.path("R", "GA"),
 
 ## Parameters --------------------------------------------------------------
 
-## Running function --------------------------------------------------------
-
 mfitness <- memoise::memoise(concProb_glm_bin)
 
 # random suggestion sample 
 suggestions <- matrix(as.double(NA), 
                       nrow = 10, 
-                      ncol = VH$length)
-for(j in 1:10) { positions <- sample.int(n = VH$length, 
+                      ncol = VH$getLength())
+for(j in 1:10) { positions <- sample.int(n = VH$getLength(), 
                                          size = 20)
-suggestion <- rep(0,  VH$length)
+suggestion <- rep(0,  VH$getLength())
 suggestion[positions] <- 1
 
 suggestions[j,] <- suggestion
@@ -44,9 +42,9 @@ suggestions[j,] <- suggestion
 suggestions <- rbind(VH$getCoding(vars), 
                      suggestions)
 
-# Run ---------------------------------------------------------------------
+## Running function --------------------------------------------------------
 
-ga_GA_1 <- ga(fitness = concProb_glm_bin, 
+GA_sim_1 <- ga(fitness = concProb_glm_bin, 
              trainDT = trainDT, 
              testDT = testDT, 
              distMod = poisson(link='log'), 
