@@ -34,7 +34,7 @@ R6::R6Class("TransferFunction",
 #'
 #' @returns results of function `fun`
               transfer = function(x){
-                  return(self$fun(x))
+                  return(private$fun(x))
                 }, 
               
 #' Update the next positions based on the transfer functions
@@ -48,10 +48,10 @@ R6::R6Class("TransferFunction",
                 rand <- runif(length(x))
                 transferedy <- self$transfer(velocity)
                 if(private$type == "S"){
-                  return(rand < transferedy)
+                  return(as.numeric(rand < transferedy))
                 } else if(private$type == "V"){
-                  return((rand < transferedy) * abs(x - 1) +
-                           (rand >= transferedy) * x)
+                  return(as.numeric((rand < transferedy) * abs(x - 1) +
+                           (rand >= transferedy) * x))
                 } else{ 
                   stop("Type is not correct")  
                 }
