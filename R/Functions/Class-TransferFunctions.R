@@ -46,11 +46,17 @@ R6::R6Class("TransferFunction",
 #' @returns transfer the final results
               changePosition = function(x, velocity){
                 rand <- runif(length(x))
+                if("matrix" %in% class(x)){
+                  rand <- matrix(rand, 
+                                 nrow = dim(x)[1], 
+                                 ncol = dim(x)[2])
+                } 
+                
                 transferedy <- self$transfer(velocity)
                 if(private$type == "S"){
-                  return(as.numeric(rand < transferedy))
+                  return( 1 * (rand < transferedy))
                 } else if(private$type == "V"){
-                  return(as.numeric((rand < transferedy) * abs(x - 1) +
+                  return(1 * ((rand < transferedy) * abs(x - 1) +
                            (rand >= transferedy) * x))
                 } else{ 
                   stop("Type is not correct")  
