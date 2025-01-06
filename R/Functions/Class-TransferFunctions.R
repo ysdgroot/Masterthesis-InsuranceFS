@@ -12,11 +12,11 @@ library(sigmoid)
 R6::R6Class("TransferFunction", 
             public = list(
 
-#' @param name character. Name of the transfer function
-#' @param fun function. function to transform into values between 0 and 1
-#' @param type character, "S" or "V", if it is S-shaped or V-shaped transfer class
-#'
-#' @returns R6 object 
+              #' @param name character. Name of the transfer function
+              #' @param fun function. function to transform into values between 0 and 1
+              #' @param type character, "S" or "V", if it is S-shaped or V-shaped transfer class
+              #'
+              #' @returns R6 object 
               initialize = function(name, 
                                     fun, 
                                     type = "S"){
@@ -28,22 +28,22 @@ R6::R6Class("TransferFunction",
                 }
                 private$type <- type
               }, 
-#' Transfer the values 
-#'
-#' @param x vector or matrix to calculate the function on
-#'
-#' @returns results of function `fun`
+              #' Transfer the values 
+              #'
+              #' @param x vector or matrix to calculate the function on
+              #'
+              #' @returns results of function `fun`
               transfer = function(x){
                   return(private$fun(x))
                 }, 
               
-#' Update the next positions based on the transfer functions
-#'
-#' @param x binary vector of current position
-#' @param velocity vector of the next position which is also called the velocity. 
-#' based on the velocity the next binary positions are produced  
-#'
-#' @returns transfer the final results
+              #' Update the next positions based on the transfer functions
+              #'
+              #' @param x binary vector of current position
+              #' @param velocity vector of the next position which is also called the velocity. 
+              #' based on the velocity the next binary positions are produced  
+              #'
+              #' @returns transfer the final results
               changePosition = function(x, velocity){
                 rand <- runif(length(x))
                 if("matrix" %in% class(x)){
