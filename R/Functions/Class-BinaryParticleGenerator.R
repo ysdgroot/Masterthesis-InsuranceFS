@@ -25,7 +25,7 @@ R6::R6Class("BPG",
               initialize = function(generator, 
                                     chance_bit = 0.5, 
                                     suggestions = NULL){
-                if(!("Particle" %in% generator$inherit)){
+                if(!("Particle" %in% get_full_inheritance(generator))){
                   #TODO: check for inherit from different levels
                   stop("Generator should inherit from Particle")
                 }
@@ -141,9 +141,8 @@ R6::R6Class("BPG-Velocity",
                                 chance_bit, 
                                 suggestions)
                 
-                if(!("Particle-Velocity" %in% generator$inherit)){
-                  #TODO: check for inherit from different levels
-                  stop("Generator should inherit from Particle")
+                if(!("Particle-Velocity" %in% get_full_inheritance(generator))){
+                  stop("Generator should inherit from Particle-Velocity")
                 }
                 
                 self$boundary_velocity <- boundary_velocity
