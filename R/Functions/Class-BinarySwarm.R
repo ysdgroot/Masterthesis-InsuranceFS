@@ -43,6 +43,7 @@ R6::R6Class("BinarySwarm",
                                             "OptimResult" = 0)
                 private$has_run <- FALSE
                 private$iteration <- 1
+                private$max_iteration <- 30
                 
                 
                 # particle_generator returns list of elements 
@@ -84,6 +85,7 @@ R6::R6Class("BinarySwarm",
                 if(!is.null(seed)){set.seed(seed)} 
                 
                 private$has_run <- TRUE
+                private$max_iteration <- max_iter
                 
                 all_results <- list()
                 counter_stable <- 0
@@ -128,6 +130,8 @@ R6::R6Class("BinarySwarm",
               has_run = NULL,
               #' @field iteration integer, position of the iteration during the process
               iteration = NULL, 
+              #' @field max_iteration integer, maximum number of iterations to perform
+              max_iteration = NULL, 
               update_all_positions = function(){
                  stop("Should be implemented in the subclass")
               }, 

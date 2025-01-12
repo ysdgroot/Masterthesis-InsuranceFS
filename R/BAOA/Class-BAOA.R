@@ -1,125 +1,49 @@
 library(R6)
-#TODO: documentation
-R6::R6Class("BAOA", 
+
+
+# Particle ----------------------------------------------------------------
+
+R6::R6Class("ParticleBAOA", 
+            inherit = Particle) -> ParticleBAOA
+
+
+# Swarm for the particle --------------------------------------------------
+
+R6::R6Class("SwarmBAOA", 
+            inherit = BinarySwarm, 
             public = list(
-              initialize = function(popSize, 
-                                    nBits, 
+              minMoa = NULL, 
+              maxMoa = NULL, 
+              beta = NULL, 
+              k = NULL, 
+              delta = NULL, 
+              initialize = function(population_size,
+                                    n_bits, 
+                                    transferFun, 
+                                    particle_generator, 
                                     beta, 
                                     k, 
                                     minMoa, 
-                                    maxMoa, 
-                                    transferFun, 
-                                    suggestions = NULL, 
-                                    chanceBit = 0.2,
+                                    maxMoa,
                                     delta = 1e-8){
-                private$popSize <- popSize
-                private$nBits <- nBits
-                private$beta <- beta
-                private$k <- k
-                private$delta <- delta
-                private$transferFun <- transferFun
-                private$minMoa <- minMoa
-                private$maxMoa <- maxMoa
-                private$globalBest <- list("Position" = 0, 
-                                           "Result" = 0)
-                private$hasRun <- FALSE
                 
-                
-                # Construction of the particles
-                list_elements <- list()
-                if (!is.null(suggestions)){
-                  part_list <- sample(suggestions, 
-                                      size = min(popSize, length(suggestions)))
-                  
-                  for(element in part_list){
-                    position <- element
-                    list_elements <- append(list_elements, list(position))
-                  }
+                if (!("BPG" %in% class(particle_generator))){
+                  stop("Particle should be of class 'BPG'")
                 }
                 
-                # random initialization of the particles when not enough suggestions
-                if(popSize > length(suggestions)){
-                  for (i in 1:(popSize - length(suggestions))){
-                    randPosition <- as.numeric(runif(nBits) <= chanceBit)
-
-                    list_elements <- append(list_elements, list(randPosition))
-                  }
-                }
+                super$initialize(population_size,
+                                 n_bits, 
+                                 transferFun, 
+                                 particle_generator)
                 
-                private$population <- list_elements
-                
-              }, 
-              
-              run_process = function(fun, 
-                                     argsFun = list(), 
-                                     maxIter = 30, 
-                                     maxStable = 10, 
-                                     seed = NULL){
-                if(!is.null(seed)){set.seed(seed)} 
-                 
-                private$hasRun <- TRUE
-                
-                allResults <- list()
-                counterStable <- 0
-                
-                for(i in 1:maxIter){
-                  # get all the results of all positions 
-                  results <- private$get_results(fun, 
-                                                argsFun)
-                  
-                  # update All results
-                  allResults <- append(allResults, list(results))
-                  
-                  if (max(unlist(results$Results)) > private$globalBest$Result){
-                    
-                    private$globalBest$Result <- max(unlist(results$Results))
-                    private$globalBest$Position <- results$Position[min(which(results$Results == max(unlist(results$Results))))]
-                    counterStable <- 1
-                  } else {
-                    counterStable <- counterStable + 1
-                  }
-                  
-                  # it is stable enough, so get out the first loop
-                  if(counterStable >= maxStable){break}
-                  
-                  # update the different phase
-                  next_pos <- private$new_positions(i, 
-                                                    maxIter)
-                  
-                  # transfer the to Binary setting (velocity is the new position)
-                  next_pos_trans <- private$transferFun$changePosition(next_pos, next_pos)
-                  
-                  t_mat <- t(next_pos_trans)
-                  next_pos_trans <- split(t_mat, 
-                        rep(1:ncol(t_mat), 
-                            each = nrow(t_mat)))
-                  names(next_pos_trans) <- NULL #otherwise there will be names added
-                  
-                  # update the positions to be 
-                  private$population <- next_pos_trans
-                }
-                
-                return(list(AllResults = allResults, 
-                            BestResult = private$globalBest))
-
-              }, 
-              getGlobalBest = function(){
-                if (!private$hasRun){stop("Process hasn't run yet")}
-                return(private$globalBest)
+                self$beta <- beta
+                self$k <- k
+                self$delta <- delta
+                self$minMoa <- minMoa
+                self$maxMoa <- maxMoa
               }
             ), 
-            private = list(popSize = NULL, 
-                           population = NULL, 
-                           nBits = NULL, 
-                           beta = NULL, 
-                           k = NULL, 
-                           delta = NULL, 
-                           transferFun = NULL, 
-                           minMoa = NULL, 
-                           maxMoa = NULL,
-                           globalBest = NULL,
-                           hasRun = NULL,
-                           #' @description 
+            private = list(#' @description 
                            #' Math optimizer accelerated (MOA)
                            #' 
                            #' Function which is used the determine the probability of the exploration or exploitation phase 
@@ -130,7 +54,7 @@ R6::R6Class("BAOA",
                            #'
                            #' @returns numeric value
                            MOA = function(t, Tmax){
-                             return(private$minMoa + t * ((private$maxMoa - private$minMoa)/Tmax))
+                             return(self$minMoa + t * ((self$maxMoa - self$minMoa)/Tmax))
                            }, 
                            #' @description 
                            #' Math optimizer probability (MOP)
@@ -144,7 +68,7 @@ R6::R6Class("BAOA",
                            #'
                            #' @returns numeric value
                            MOP = function(t, Tmax){
-                             return(1 - t ** (1/private$beta)/(Tmax**(1/private$beta)))
+                             return(1 - t ** (1/self$beta)/(Tmax**(1/self$beta)))
                            }, 
                            
                           #' @description
@@ -217,19 +141,66 @@ R6::R6Class("BAOA",
                              
                              return(result)
                            }, 
-                           get_results = function(fun, argsFun){
-                             results <- list()
-                             positions <- list()
-                             for(part in private$population){
-                               # part is in this only a position
-                               position <- part
-                               result <- do.call(fun, 
-                                                 args = append(list(position), argsFun))
-                               
-                               positions <- append(positions, list(position))
-                               results <- append(results, list(result))
-                             }
-                             return(list("Results" = results, 
-                                         "Positions" = positions))
-                           }
-                           )) -> BAOA
+                          
+                          update_all_positions = function(){
+                            
+                            t <- private$iteration
+                            Tmax <- private$max_iteration
+                            
+                            # get MOA(t)
+                            moa_t <- private$MOA(t, Tmax)
+                            
+                            # exploration phase when r > MOA(t)
+                            rand1 <- matrix(runif(private$population_size * private$n_bits),
+                                            nrow = private$population_size, 
+                                            ncol = private$n_bits)
+                            
+                            # vector of values 
+                            isExploration <- rand1 > moa_t
+                            
+                            # generate random values for the type of calculation
+                            rand2 <- matrix(runif(private$population_size * private$n_bits),
+                                            nrow = private$population_size, 
+                                            ncol = private$n_bits)
+                            
+                            # the MOP of at iteration t
+                            mop_t <- private$MOP(t, Tmax)
+                            
+                            # the original division is 
+                            # (MOP + delta) * ((ub_j - lb_j) * k + lb_j)
+                            # but because of binary levels ub_j = 1 and lb_j = 0
+                            division <- (mop_t + self$delta) * self$k
+                            
+                            # original 
+                            # MOP * ((ub_j - lb_j) * k + lb_j)
+                            multi_add_minus <- mop_t * self$k
+                            
+                            # calculated everything at once 
+                            # matrix addition and multiplication is iterating row and then column 
+                            # not in the same 'shape' as the vector
+                            matrix_global_best <- t(matrix(rep(private$global_best[["Position"]], 
+                                                               private$population_size), 
+                                                           ncol = private$population_size))
+                            
+                            result <- isExploration *
+                              matrix_global_best *
+                              ((rand2 < 0.5) * 1/division +
+                                 (rand2 >= 0.5) * multi_add_minus) +
+                              
+                              !isExploration *
+                              ( matrix_global_best +
+                                  multi_add_minus *
+                                  ((rand2 < 0.5) * (-1) +
+                                     (rand2 >= 0.5)))
+                            
+                            i <- 1
+                            # update position of each particle 
+                            for(particle in private$population){
+                              result_i <- result[i, ]
+                              new_position <- private$transferFun$changePosition(result_i, 
+                                                                                 result_i)
+                              particle$set_position(new_position)
+                              i <- i + 1
+                            }
+                            }
+                           )) -> SwarmBAOA
