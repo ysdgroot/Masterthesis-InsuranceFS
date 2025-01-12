@@ -54,7 +54,7 @@ R6::R6Class("BinarySwarm",
               }, 
               get_global_best = function(){
                 if (!private$has_run){warning("Process hasn't run yet")}
-                return(private$globalBest)
+                return(private$global_best)
               },
               #' @description
               #' Returns the iteration during the process
@@ -91,7 +91,7 @@ R6::R6Class("BinarySwarm",
                 for(i in 1:max_iter){
                   # get all the results of the particles
                   results <- private$get_results(fun, 
-                                                 argsFun)
+                                                 args_fun)
                   
                   has_global_best <- private$set_global_best(results)
                   
@@ -110,7 +110,7 @@ R6::R6Class("BinarySwarm",
                   
                 }
                 return(list(AllResults = all_results, 
-                            BestResult = private$globalBest))
+                            BestResult = private$global_best))
               }
             ),
             private = list(
@@ -148,10 +148,10 @@ R6::R6Class("BinarySwarm",
                    result <- results[["OptimResults"]][[i]]
                    position <- results[["Positions"]][[i]]
                    
-                   if (is.null(private$globalBest) ||
-                                      optim_result > private$globalBest[["OptimResult"]]) {
-                     private$globalBest <- list("Position" = position,
-                                                "OptimResult" = optim_result) 
+                   if (is.null(private$global_best) ||
+                       result > private$global_best[["OptimResult"]]) {
+                     private$global_best <- list("Position" = position,
+                                                "OptimResult" = result) 
                      changed_global <- TRUE
                    }
                  }
@@ -179,12 +179,14 @@ R6::R6Class("BinarySwarm",
                  
                  for(part in private$population){
                    # first get the position
-                   position <- part$getPosition()
+                   position <- part$get_position()
                    results_part <- do.call(fun, 
                                      args = append(list(position), argsFun))
                    # first element is to maximize
-                   #TODO: check if this works when only a value is given
-                   result <- result_part[[1]]
+                   result <- results_part[[1]]
+                   
+                   #save result in the particle
+                   part$save_result(result)
                    
                    # store the results
                    positions <- append(positions, list(position))
@@ -193,6 +195,6 @@ R6::R6Class("BinarySwarm",
                  }
                  return(list("Results" = results, 
                              "Positions" = positions, 
-                             "OptimResults" = result_part))
+                             "OptimResults" = all_result))
                } 
                )) -> BinarySwarm

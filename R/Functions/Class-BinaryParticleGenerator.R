@@ -137,12 +137,12 @@ R6::R6Class("BPG-Velocity",
                                     boundary_velocity = c(-6, 6),
                                     suggestions = NULL){
                 # call the super 
-                super$intialize(generator, 
+                super$initialize(generator, 
                                 chance_bit, 
                                 suggestions)
                 
-                if(!("Particle-Velocity" %in% get_full_inheritance(generator))){
-                  stop("Generator should inherit from Particle-Velocity")
+                if(!("ParticleVelocity" %in% get_full_inheritance(generator))){
+                  stop("Generator should inherit from ParticleVelocity")
                 }
                 
                 self$boundary_velocity <- boundary_velocity
