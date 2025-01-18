@@ -143,5 +143,3 @@ R6::R6Class("ParticleVelocity",
               velocity = NULL
             )) -> ParticleVelocity
 
-
-

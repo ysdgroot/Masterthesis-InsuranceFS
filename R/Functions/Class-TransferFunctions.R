@@ -1,6 +1,3 @@
-library(R6)
-library(sigmoid)
-
 #' Construction of the S-shaped and V-shaped transfer functions
 #'
 #' @field name character. Name of the transfer function
@@ -67,5 +64,3 @@ R6::R6Class("TransferFunction",
             private = list(name = NULL,
                            fun = NULL, 
                            type = NULL)) -> TransferFunction
-
-

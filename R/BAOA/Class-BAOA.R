@@ -1,6 +1,3 @@
-library(R6)
-
-
 # Particle ----------------------------------------------------------------
 
 R6::R6Class("ParticleBAOA", 
@@ -78,17 +75,13 @@ R6::R6Class("SwarmBAOA",
                           #' @param Tmax the maximum number of iterations
                           #' 
                           #' @details
-                          #' 
-                          #' 
-                          #'
-                          #' @returns
+                          #' @returns matrix with all the new positions. 
+                          #' rows represents a particle. 
+                          #' columns represents the positions in that dimension
                           #' @export
-                          #'
-                          #' @examples
                            new_positions = function(t,
                                                     Tmax){
-                             
-                             
+                            
                              # get MOA(t)
                              moa_t <- private$MOA(t, Tmax)
                              
