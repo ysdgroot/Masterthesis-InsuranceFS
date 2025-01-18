@@ -1,5 +1,3 @@
-library(R6)
-
 #' R6 Class Representing variable handler
 #' This to be able to convert Binary into variables and vice versa.
 #' Also be able to construct a formula which can be used like a GLM
@@ -281,7 +279,7 @@ R6::R6Class("VariableHandler",
               #' @param targetVar character, variable name to be put before the `~`
               #' @param offset NULL or character, if NULL then ignored, 
               #' if not it will be transformed by the link function and put as offset
-              #' @param withMain logical, if the main-variables (only for interations) should be included or not
+              #' @param withMain logical, if the main-variables (only for interactions) should be included or not
               #' Be aware it will only look at the variables for the coding. 
               #' So if a main variable is in the fixed or ignored list, it will not be added to the coding. 
               #' @param message logical, is message if a main variable is not used or not. 
