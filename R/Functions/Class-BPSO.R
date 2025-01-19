@@ -1,5 +1,3 @@
-library(R6)
-
 # Particle of the swarm ---------------------------------------------------
 
 R6::R6Class("ParticleBPSO", 
