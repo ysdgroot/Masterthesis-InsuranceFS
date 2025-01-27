@@ -58,13 +58,25 @@ VH <- VariableHandler$new(variables = vars,
 
 # Fitness-function --------------------------------------------------------
 
-#TODO: create function to transform and run the GLM model 
-# reference for:
-# H Uno, T Cai, M Pencina, R D'Agnostino and Lj Wei, 
-# On the C-statistics for evaluating overall adequacy of risk prediction procedures with censored survival data, 
-# Statistics in Medicine, 2011.
-#
+mfitness <- memoise::memoise(concProb_glm_fastglm)
 
+# suggestions -------------------------------------------------------------
+
+# random suggestion sample 
+suggestions <- matrix(as.double(NA), 
+                      nrow = 9, 
+                      ncol = VH$getLength())
+for(j in 1:9) { 
+  positions <- sample.int(n = VH$getLength(), 
+                          size = 5)
+  suggestion <- rep(0,  VH$getLength())
+  suggestion[positions] <- 1
+  
+  suggestions[j,] <- suggestion
+}
+
+suggestions <- rbind(VH$getCoding(vars), 
+                     suggestions)
 
 
 # TransferFunctions -------------------------------------------------------
