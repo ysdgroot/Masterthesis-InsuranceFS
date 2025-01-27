@@ -26,6 +26,10 @@ vars <- c('age', 'density', 'carVal', 'uwYear', 'gender',
           'carType', 'carCat', 'job', 'group1', 'bm', 
           'nYears', 'cover')
 
+seed <- 42
+null_value <- 0.5
+set.seed(seed)
+
 # generate the training samples
 trainSamp <- sample(c(1:nrow(inputDT)), 
                     round(0.8*nrow(inputDT)), 
@@ -36,11 +40,21 @@ testDT <- inputDT[-trainSamp, ]
 
 inputDTAll <- copy(inputDT)
 
+(folder_name <- sprintf("Seed%d_%s_n%d_null%g", 
+                        seed, 
+                        "bin", 
+                        VH$getLength(), 
+                        null_value))
+full_folder_name <- file.path("Data", folder_name)
+
+dir.create(full_folder_name, showWarnings = FALSE)
+
 # Variable Handler  -------------------------------------------------------
 # this can convert the binary coding to the columns that needs to be selected
 
+order <- 1
 VH <- VariableHandler$new(variables = vars, 
-                          order = 2)
+                          order = order)
 
 # Fitness-function --------------------------------------------------------
 
