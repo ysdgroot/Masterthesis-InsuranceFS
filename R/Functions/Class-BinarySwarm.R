@@ -40,7 +40,7 @@ R6::R6Class("BinarySwarm",
                 
                 # set the global best
                 private$global_best <- list("Position" = 0, 
-                                            "OptimResult" = 0)
+                                            "Result" = 0)
                 private$has_run <- FALSE
                 private$iteration <- 1
                 private$max_iteration <- 30
@@ -80,6 +80,7 @@ R6::R6Class("BinarySwarm",
                                      args_fun = list(), 
                                      max_iter = 30, 
                                      max_stable = 5, 
+                                     show_process = TRUE, 
                                      seed = NULL){
                 
                 if(!is.null(seed)){set.seed(seed)} 
@@ -91,6 +92,9 @@ R6::R6Class("BinarySwarm",
                 counter_stable <- 0
                 
                 for(i in 1:max_iter){
+                  if (show_process) {
+                    cat(sprintf("Iteration: %d \n", i))
+                  }
                   # get all the results of the particles
                   results <- private$get_results(fun, 
                                                  args_fun)
@@ -140,7 +144,7 @@ R6::R6Class("BinarySwarm",
               #'
               #' @param results list of results. 
               #' List of the result should have 3 elements
-              #' `Positions`, `Results` & `OptimResults` 
+              #' `Positions`, `Results` & `AllResults` 
               #' based on output of function [get_results()]
               #'
               #' @returns TRUE if the global best is updated
@@ -148,14 +152,13 @@ R6::R6Class("BinarySwarm",
                set_global_best = function(results){
                  changed_global <- FALSE
                  # update Global best
-                 for(i in seq_along(results[["OptimResults"]])){
-                   result <- results[["OptimResults"]][[i]]
+                 for(i in seq_along(results[["Result"]])){
+                   result <- results[["Result"]][[i]]
                    position <- results[["Positions"]][[i]]
                    
-                   if (is.null(private$global_best) ||
-                       result > private$global_best[["OptimResult"]]) {
+                   if (result > private$global_best[["Result"]]) {
                      private$global_best <- list("Position" = position,
-                                                "OptimResult" = result) 
+                                                 "Result" = result) 
                      changed_global <- TRUE
                    }
                  }
@@ -172,9 +175,9 @@ R6::R6Class("BinarySwarm",
               #' @param argsFun list with arguments passed to `fun`
               #'
               #' @returns list with 3 elements with names:
-              #' `Results` list with all the output results 
+              #' `Result` list with all the output results 
               #' `Positions` list with all the positions checked
-              #' `OptimResults` list with the results which should be optimized 
+              #' `AllResults` list with the results which should be optimized 
               #' The results and positions are in the same order of each other
                get_results = function(fun, argsFun){
                  results <- list() # results to optimize
@@ -197,8 +200,8 @@ R6::R6Class("BinarySwarm",
                    results <- append(results, list(result))
                    all_result <- append(all_result, list(results_part))
                  }
-                 return(list("Results" = results, 
+                 return(list("Result" = results, 
                              "Positions" = positions, 
-                             "OptimResults" = all_result))
+                             "AllResults" = all_result))
                } 
                )) -> BinarySwarm
