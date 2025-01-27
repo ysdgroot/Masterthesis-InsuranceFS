@@ -1,61 +1,40 @@
 # Importing library -------------------------------------------------------
 
 source(file.path("R", "Packages.R"))
+
 source(file.path("R", "General Parameters.R"))
-
-# source all the functions for the GA
-sapply(list.files(file.path("R", "BPSO"), 
-                  pattern = "*.R", 
-                  full.names = TRUE), 
-       FUN = "source", 
-       echo = FALSE, 
-       prompt.echo = FALSE)
-
 
 # Model run ---------------------------------------------------------------
 
-## Parameters --------------------------------------------------------------
-
-mfitness <- memoise::memoise(concProb_glm_bin)
-
-set.seed(8)
-
-# random suggestion sample 
-suggestions <- matrix(as.double(NA), 
-                      nrow = 10, 
-                      ncol = VH$getLength())
-for(j in 1:10) { positions <- sample.int(n = VH$getLength(), 
-                                         size = 20)
-suggestion <- rep(0,  VH$getLength())
-suggestion[positions] <- 1
-
-suggestions[j,] <- suggestion
-}
-
-suggestions <- rbind(VH$getCoding(vars), 
-                     suggestions)
-
 ## Running function --------------------------------------------------------
 
-BinarySwarm$debug("runProcess")
+BPSO_gen <- BPG_Velocity$new(ParticleBPSO)
+BPSO_swarm <- SwarmBPSO$new(10, 
+                            VH$get_length(), 
+                            transferFun = baseClassTransferFunctions$S1, 
+                            BPSO_gen, 
+                            w = 1, 
+                            k1 = 2, 
+                            k2 = 3, 
+                            chanceBit = 0.2, 
+                            seed = 739, 
+                            suggestions = NULL)
 
-BPSO_sim1 <- BinarySwarm$new(5, 
-                             nBits = VH$getLength(), 
-                             w = 1, 
-                             k1 = 2,
-                             k2 = 3,
-                             transferFun = baseClassTransferFunctions$S1, 
-                             suggestions = NULL, 
-                             chanceBit = 0.2, 
-                             seed = 739)
+BPSO_run <- BPSO_swarm$run_process(concProb_glm_fastglm, 
+                               max_stable = 5, 
+                               max_iter = 10,
+                               args_fun = list(
+                                 trainDT = trainDT, 
+                                 testDT = testDT, 
+                                 distMod = poisson(link = "log"), 
+                                 variableHandler = VH, 
+                                 nullValue = 0.5, 
+                                 type = "bin", 
+                                 offset = "exposure", 
+                                 targetVar = "claimNumber", 
+                                 location_save = full_folder_name
+                               ), 
+                               seed = 123)
 
-BPSO_sim1$runProcess(fun = concProb_glm_bin,
-                     maxIter = 1,
-                     argsFun = list(trainDT = trainDT, 
-                                    testDT = testDT, 
-                                    distMod = poisson(link = "log"), 
-                                    variableHandler = VH, 
-                                    offset = "exposure", 
-                                    targetVar = "claimNumber", 
-                                    withMain = TRUE, 
-                                    message = FALSE))
+test_res_BPSO <- result_2_dt(BPSO_run$AllResults)
+

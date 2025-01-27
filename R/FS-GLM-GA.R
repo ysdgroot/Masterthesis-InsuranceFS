@@ -20,30 +20,7 @@ sapply(list.files(file.path("R", "GA"),
        echo = FALSE, 
        prompt.echo = FALSE)
 
-
 # Model run ---------------------------------------------------------------
-
-## Parameters --------------------------------------------------------------
-
-mfitness <- memoise::memoise(concProb_glm_fastglm)
-
-# random suggestion sample 
-suggestions <- matrix(as.double(NA), 
-                      nrow = 9, 
-                      ncol = VH$getLength())
-for(j in 1:9) { 
-positions <- sample.int(n = VH$getLength(), 
-                        size = 5)
-suggestion <- rep(0,  VH$getLength())
-suggestion[positions] <- 1
-
-suggestions[j,] <- suggestion
-}
-
-suggestions <- rbind(VH$getCoding(vars), 
-                     suggestions)
-
-
 
 ## Running function --------------------------------------------------------
 #TODO: problem with the GA, if the suggestions are bigger than the population size, it will cause an error
@@ -67,8 +44,8 @@ GA_sim_1 <- ga(fitness = mfitness,
              elitism = 3, # best N indiv. to pass to next iteration
              pmutation = 0.2, # mutation rate prob
              popSize = 10, # number of the population in each evolution
-             nBits = VH$getLength(), # total number of variables
-             names = VH$getUsedVariables(), # variable name
+             nBits = VH$get_length(), # total number of variables
+             names = VH$get_used_variables(), # variable name
              run = 10, # max iter without improvement (stopping criteria)
              maxiter = 50, # total runs or generations
              monitor = plot, # plot the result at each iteration
