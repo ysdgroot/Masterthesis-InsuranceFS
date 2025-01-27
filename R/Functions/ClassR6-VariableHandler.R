@@ -222,6 +222,34 @@ R6::R6Class("VariableHandler",
                  return(self$getUsedVariables()[selected_coding == 1])
                }, 
               #' @description
+              #' get the variables based on a character string
+              #' 
+              #' @param coding character binary vector of length `getLength()`
+              #' @param withMain logical, if the main-variables (only for interations) should be included or not
+              #' Be aware it will only look at the variables for the coding. 
+              #' So if a main variable is in the fixed or ignored list, it will not be added to the coding. 
+              #' @param message logical, is message if a main variable is not used or not. 
+              #' Only when `withMain` is set to `TRUE`
+              #'
+              #' @returns list of variables based on coding. 
+              #' The length will be the sum of the coding
+              get_variables_char = function(coding, 
+                                            withMain = FALSE, 
+                                            message = FALSE){
+                
+                if(nchar(coding) != self$getLength()){
+                  stop(sprintf("Length of the coding is incorrect, there should be %d characters", 
+                               self$getLength()))
+                }
+                
+                code <- as.numeric(unlist(strsplit(coding, split = "")))
+                
+                return(self$getVariables(coding = code, 
+                                          withMain = withMain, 
+                                          message = message))
+                
+              }
+              #' @description
               #' Get the binary coding based on the variables given. 
               #'
               #' @param variables character (vector), only values from `getUsedVariables()` should be used, 
