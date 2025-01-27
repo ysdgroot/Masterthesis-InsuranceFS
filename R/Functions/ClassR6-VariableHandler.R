@@ -248,7 +248,7 @@ R6::R6Class("VariableHandler",
                                           withMain = withMain, 
                                           message = message))
                 
-              }
+              },
               #' @description
               #' Get the binary coding based on the variables given. 
               #'

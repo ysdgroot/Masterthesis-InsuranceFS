@@ -126,7 +126,9 @@ concProb_glm_fastglm <- function(coding,
                   "TestData" = as.numeric(result_testdata), 
                   "TrainData" = as.numeric(result_traindata), 
                   "AIC" = AIC(fitModel), 
-                  "BIC" = BIC(fitModel))
+                  "BIC" = BIC(fitModel), 
+                  "Position" = paste(coding, 
+                                     collapse = ""))
   
   if (!is.null(location_save)) {
     # save the result if the location is given
@@ -136,3 +138,4 @@ concProb_glm_fastglm <- function(coding,
   
   return(results)
 }
+
