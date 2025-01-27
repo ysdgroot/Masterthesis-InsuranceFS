@@ -52,57 +52,6 @@ VH <- VariableHandler$new(variables = vars,
 #
 
 
-#TODO: add location to save and retrieve the results
-#' Fitness function needed for the algorithms to work on 
-#'
-#' @param coding 
-#' @param trainDT 
-#' @param testDT 
-#' @param distMod 
-#' @param variableHandler 
-#' @param nullValue 
-#' @param offset 
-#' @param targetVar 
-#' @param withMain 
-#' @param message 
-#'
-#' @returns
-#' @export
-concProb_glm_bin <- function(coding, 
-                             trainDT, 
-                             testDT, 
-                             distMod, 
-                             variableHandler,
-                             nullValue = 0.5,
-                             offset = "exposure", 
-                             targetVar = "ClaimNumber", 
-                             withMain = TRUE, 
-                             message = FALSE){
-  
-  formula_glm <- variableHandler$getFormula(coding = coding, 
-                                            distMod = distMod, 
-                                            targetVar = targetVar, 
-                                            withMain = withMain, 
-                                            message = message)
-  
-  #TODO: use the GLM function from speedglm instead
-  fitModel <- bam(formula = formula_glm, 
-                  family = distMod, 
-                  data = trainDT, 
-                  chunk.size = min(10000, nrow(trainDT)))
-  
-  predModel <- predict(fitModel, 
-                       testDT, 
-                       type = 'response')
-  
-  #TODO: check if the function is correctly calculating the result
-  #TODO: shouldn't there be an extra parameter for the distance in case of claim size? 
-  result <- concProb_bin_fast(testDT[[targetVar]], predModel)$concProb
-  # remove the NullValue such that the selection is better 
-  result <- result - nullValue
-  
-  return(result)
-}
 
 # TransferFunctions -------------------------------------------------------
 

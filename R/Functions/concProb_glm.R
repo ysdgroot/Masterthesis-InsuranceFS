@@ -41,11 +41,11 @@ concProb_glm <- function(coding,
                          testDT, 
                          distMod, 
                          variableHandler,
+                         targetVar, 
                          nullValue = 0,
                          type = "bin", 
                          nu = 0,
-                         offset = "exposure", 
-                         targetVar = "ClaimNumber", 
+                         offset = NULL, 
                          withMain = TRUE, 
                          message = FALSE, 
                          location_save = NULL){
@@ -74,14 +74,20 @@ concProb_glm <- function(coding,
   formula_glm <- variableHandler$getFormula(coding = coding, 
                                             distMod = distMod, 
                                             targetVar = targetVar, 
+                                            offset = offset, 
                                             withMain = withMain, 
                                             message = message)
   
+  cl <- parallel::makeCluster(8)
+    
   #TODO: use the GLM function from speedglm instead
   fitModel <- bam(formula = formula_glm, 
                   family = distMod, 
                   data = trainDT, 
-                  chunk.size = min(10000, nrow(trainDT)))
+                  chunk.size = min(10000, nrow(trainDT)), 
+                  cluster=cl)
+  
+  stopCluster(cl)
   
   # Get Concordance Probability of the test data
   predModel_test <- predict(fitModel, 
@@ -110,12 +116,11 @@ concProb_glm <- function(coding,
   # remove the NullValue such that the selection is better 
   result <- result_testdata - nullValue
   
-  results <- list("Result" = result,
-                   "TestData" = result_testdata, 
-                   "TrainData" = result_traindata, 
+  results <- list("Result" = as.numeric(result),
+                   "TestData" = as.numeric(result_testdata), 
+                   "TrainData" = as.numeric(result_traindata), 
                    "AIC" = AIC(fitModel), 
-                   "BIC" = BIC(fitModel), 
-                   "Deviance" = deviance(fitModel))
+                   "BIC" = BIC(fitModel))
   
   if (!is.null(location_save)) {
     # save the result if the location is given
