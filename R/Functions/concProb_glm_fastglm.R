@@ -74,7 +74,7 @@ concProb_glm_fastglm <- function(coding,
     }
   }
   
-  formula_glm <- variableHandler$getFormula(coding = coding, 
+  formula_glm <- variableHandler$get_formula(coding = coding, 
                                             distMod = distMod, 
                                             targetVar = targetVar, 
                                             offset = offset, 

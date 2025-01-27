@@ -57,53 +57,53 @@ R6::R6Class("VariableHandler",
                  private$fixed <- character(0)
                }, 
               #' @returns the number binary positions needed
-               getLength = function(){
+               get_length = function(){
                  return(length(private$used_variables))
                }, 
 
               #' @description
               #' get some basic info about which variables are used, fixed, ignored. 
               #' @returns list with 7 elements
-              #' nUsed = number of used variables (same as `getLength()`)
+              #' nUsed = number of used variables (same as `get_length()`)
               #' nFixed = number variables which are fixed 
               #' nIgnored = number of variables which are ignored
               #' AllVariables = all possible variables
               #' Used = all variables which are used for the binary construction 
               #' Fixed = all variables which are fixed
               #' Ignored = all variables which are ignored
-               getInfo = function(){
+               get_info = function(){
                  return(list("nUsed" = length(private$used_variables), 
                              "nFixed" =length(private$fixed), 
                              "nIgnored" = length(private$ignored), 
                              "AllVariables" = private$all_variables, 
-                             "Used" = self$getUsedVariables(), 
-                             "Fixed" = self$getFixedVariables(), 
-                             "Ignored" = self$getIgnoredVariables()))
+                             "Used" = self$get_used_variables(), 
+                             "Fixed" = self$get_fixed_variables(), 
+                             "Ignored" = self$get_ignored_variables()))
                },
               #' @description
               #' set list of variables which needs to be fixed
-              #' @param variables character (vector), only values from `getAllVariables()` should be used
+              #' @param variables character (vector), only values from `get_all_variables()` should be used
               #'
               #' @returns NULL
-               setFixedVar = function(variables){
-                 private$setterList(variables = variables, 
+               set_fixed_var = function(variables){
+                 private$setter_list(variables = variables, 
                                     type = "fixed")
                }, 
               #' @description
               #' set list of variables which needs to be ignored
-              #' @param variables character (vector), only values from `getAllVariables()` should be used
+              #' @param variables character (vector), only values from `get_all_variables()` should be used
               #'
               #' @returns NULL
-               setIgnoreVar = function(variables){
-                 private$setterList(variables = variables, 
+               set_ignore_var = function(variables){
+                 private$setter_list(variables = variables, 
                                     type = "ignored")
                }, 
 
-              #' @param variables character (vector), only values from `getAllVariables()` should be used. 
-              #' values should be in `getFixedVariables()`, otherwise an error will be thrown
+              #' @param variables character (vector), only values from `get_all_variables()` should be used. 
+              #' values should be in `get_fixed_variables()`, otherwise an error will be thrown
               #'
               #' @returns NULL
-               removeFixedVar = function(variables){
+               remove_fixed_var = function(variables){
                  # test if variable is already fixed
                  if (!all(variables %in% private$fixed)){
                    stop(sprintf("The following variables were not in the fixed list: %s", 
@@ -115,11 +115,11 @@ R6::R6Class("VariableHandler",
                  private$used_variables <- unique(union(private$used_variables, variables))
                  
                },
-              #' @param variables character (vector), only values from `getAllVariables()` should be used. 
-              #' values should be in `getIgnoredVariables()`, otherwise an error will be thrown
+              #' @param variables character (vector), only values from `get_all_variables()` should be used. 
+              #' values should be in `get_ignored_variables()`, otherwise an error will be thrown
               #'
               #' @returns NULL
-               removeIgnoreVar = function(variables){
+               remove_ignore_var = function(variables){
                  # test if variable is already ignore
                  if (!all(variables %in% private$ignored)){
                    stop(sprintf("The following variables were not in the ignore list: %s", 
@@ -132,30 +132,30 @@ R6::R6Class("VariableHandler",
                },
               #' @description
               #' set list of variables which needs to be added to the ignored
-              #' @param variables character (vector), only values from `getAllVariables()` should be used
+              #' @param variables character (vector), only values from `get_all_variables()` should be used
               #'
               #' @returns NULL
-               addIgnoreVar = function(variables){
-                 self$setIgnoreVar(unique(c(private$ignored,variables)))
+               add_ignore_var = function(variables){
+                 self$set_ignore_var(unique(c(private$ignored,variables)))
                }, 
               #' @description
               #' set list of variables which needs to be added to the fixed
-              #' @param variables character (vector), only values from `getAllVariables()` should be used
+              #' @param variables character (vector), only values from `get_all_variables()` should be used
               #'
               #' @returns NULL
-               addFixedVar = function(variables){
-                 self$setFixedVar(unique(c(private$fixed,variables)))
+               add_fixed_var = function(variables){
+                 self$set_fixed_var(unique(c(private$fixed,variables)))
                }, 
               #' @description
               #' put back values to be used for the coding and/or formula 
               #'
-              #' @param variables character (vector), only values from `getAllVariables()` should be used. 
-              #' variables should be in `getIgnoredVariables()` or `getFixedVariables()`. 
+              #' @param variables character (vector), only values from `get_all_variables()` should be used. 
+              #' variables should be in `get_ignored_variables()` or `get_fixed_variables()`. 
               #' All useful variables will be removed from the ignored/fixed list and put back in the used variables list
               #' 
               #' @param message logical, if message should be shown from where the values is taken from. 
               #' @returns
-               addUsedVar = function(variables, 
+               add_used_var = function(variables, 
                                      message = TRUE){
                  #test if variables can be found in all variables
                  if (!all(variables %in% private$all_variables)){
@@ -171,7 +171,7 @@ R6::R6Class("VariableHandler",
                                      paste(inter_ignore, 
                                            collapse = ", ")))
                    }
-                   self$removeIgnoreVar(inter_ignore)
+                   self$remove_ignore_var(inter_ignore)
                  }
                  
                  inter_fixed <- intersect(variables, private$fixed)
@@ -181,7 +181,7 @@ R6::R6Class("VariableHandler",
                                      paste(inter_fixed, 
                                            collapse = ", ")))
                    }
-                   self$removeFixedVar(inter_fixed)
+                   self$remove_fixed_var(inter_fixed)
                  }
                  
                  private$used_variables <- unique(union(union(private$used_variables, inter_ignore), inter_fixed))
@@ -189,7 +189,7 @@ R6::R6Class("VariableHandler",
                },
               #' @description
               #' get the used variables based on the binary code given
-              #' @param coding binary vector of length `getLength()`
+              #' @param coding binary vector of length `get_length()`
               #' @param withMain logical, if the main-variables (only for interations) should be included or not
               #' Be aware it will only look at the variables for the coding. 
               #' So if a main variable is in the fixed or ignored list, it will not be added to the coding. 
@@ -198,13 +198,13 @@ R6::R6Class("VariableHandler",
               #'
               #' @returns list of variables based on coding. 
               #' The length will be the sum of the coding
-               getVariables = function(coding, 
+               get_variables = function(coding, 
                                        withMain = FALSE, 
                                        message = FALSE){
                  
-                 if(length(coding) != self$getLength()){
+                 if(length(coding) != self$get_length()){
                    stop(sprintf("Length of the coding is incorrect, it should have length %d", 
-                                self$getLength()))
+                                self$get_length()))
                  }
                  
                  if(!all(coding %in% c(0,1))){
@@ -214,17 +214,17 @@ R6::R6Class("VariableHandler",
                  selected_coding <- coding
                  if (withMain){
                    # update the coding based on the function
-                   selected_coding <- self$getCoding(variables = self$getUsedVariables()[coding == 1], 
+                   selected_coding <- self$get_coding(variables = self$get_used_variables()[coding == 1], 
                                                       withMain = TRUE, 
                                                       message = message)
                  }
                  
-                 return(self$getUsedVariables()[selected_coding == 1])
+                 return(self$get_used_variables()[selected_coding == 1])
                }, 
               #' @description
               #' get the variables based on a character string
               #' 
-              #' @param coding character binary vector of length `getLength()`
+              #' @param coding character binary vector of length `get_length()`
               #' @param withMain logical, if the main-variables (only for interations) should be included or not
               #' Be aware it will only look at the variables for the coding. 
               #' So if a main variable is in the fixed or ignored list, it will not be added to the coding. 
@@ -237,14 +237,14 @@ R6::R6Class("VariableHandler",
                                             withMain = FALSE, 
                                             message = FALSE){
                 
-                if(nchar(coding) != self$getLength()){
+                if(nchar(coding) != self$get_length()){
                   stop(sprintf("Length of the coding is incorrect, there should be %d characters", 
-                               self$getLength()))
+                               self$get_length()))
                 }
                 
                 code <- as.numeric(unlist(strsplit(coding, split = "")))
                 
-                return(self$getVariables(coding = code, 
+                return(self$get_variables(coding = code, 
                                           withMain = withMain, 
                                           message = message))
                 
@@ -252,7 +252,7 @@ R6::R6Class("VariableHandler",
               #' @description
               #' Get the binary coding based on the variables given. 
               #'
-              #' @param variables character (vector), only values from `getUsedVariables()` should be used, 
+              #' @param variables character (vector), only values from `get_used_variables()` should be used, 
               #' if not, a warning will be given that those variables are not used
               #' @param withMain logical, if the main-variables (only for interations) should be included or not
               #' Be aware it will only look at the variables for the coding. 
@@ -260,9 +260,9 @@ R6::R6Class("VariableHandler",
               #' @param message logical, is message if a main variable is not used or not. 
               #' Only when `withMain` is set to `TRUE`
               #'
-              #' @returns binary vector of length `getLength()`
+              #' @returns binary vector of length `get_length()`
               #' The number of 1 is the number of variables given minus those that are ignored based on the warning given.
-               getCoding = function(variables, 
+               get_coding = function(variables, 
                                     withMain = FALSE, 
                                     message = TRUE){
                  
@@ -292,8 +292,8 @@ R6::R6Class("VariableHandler",
                    }
                  }
                  
-                 coding <- rep(0, self$getLength())
-                 positions <- which(self$getUsedVariables() %in% used_variable_coding)
+                 coding <- rep(0, self$get_length())
+                 positions <- which(self$get_used_variables() %in% used_variable_coding)
                  coding[positions] <- 1
                  
                  return(coding)
@@ -301,7 +301,7 @@ R6::R6Class("VariableHandler",
               #' @description
               #' Construction of a formula based on the coding given and the fixed variables
               #' 
-              #' @param coding binary vector of length `getLength()`
+              #' @param coding binary vector of length `get_length()`
               #' @param distMod family of distribution with a link function. 
               #' Only the link function will be used. 
               #' @param targetVar character, variable name to be put before the `~`
@@ -314,14 +314,14 @@ R6::R6Class("VariableHandler",
               #' Only when `withMain` is set to `TRUE`
               #'
               #' @returns formula based on fixed variables and the coding given
-               getFormula = function(coding, 
+               get_formula = function(coding, 
                                      distMod,
                                      targetVar, 
                                      offset = NULL, 
                                      withMain = FALSE, 
                                      message = FALSE){
                  
-                 varList <- c(self$getVariables(coding, 
+                 varList <- c(self$get_variables(coding, 
                                                  withMain = withMain,
                                                  message = message), 
                               private$fixed)
@@ -344,15 +344,15 @@ R6::R6Class("VariableHandler",
                }, 
 
               #' @returns list with all the possible variables
-               getAllVariables = function(){return(private$all_variables)}, 
+               get_all_variables = function(){return(private$all_variables)}, 
               #' @returns list with all the main variables
-               getMainVariables = function(){return(private$main_variables)}, 
+               get_main_variables = function(){return(private$main_variables)}, 
               #' @returns list with all the variables used for the coding
-               getUsedVariables = function(){return(private$all_variables[private$all_variables %in% private$used_variables])}, 
+               get_used_variables = function(){return(private$all_variables[private$all_variables %in% private$used_variables])}, 
               #' @returns list with all the variables which should be included in the formula
-               getFixedVariables = function(){return(private$all_variables[private$all_variables %in% private$fixed])}, 
+               get_fixed_variables = function(){return(private$all_variables[private$all_variables %in% private$fixed])}, 
               #' @returns list with all the variables that needs to be ignored
-               getIgnoredVariables = function(){return(private$all_variables[private$all_variables %in% private$ignored])}
+               get_ignored_variables = function(){return(private$all_variables[private$all_variables %in% private$ignored])}
              ), 
              private = list(
                main_variables = NULL, 
@@ -361,7 +361,7 @@ R6::R6Class("VariableHandler",
                fixed = NULL,
                ignored = NULL,
                used_variables = NULL, 
-               setterList = function(variables,
+               setter_list = function(variables,
                                     type){
                 
                  ## CHECKS

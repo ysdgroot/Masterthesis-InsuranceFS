@@ -43,7 +43,7 @@ inputDTAll <- copy(inputDT)
 (folder_name <- sprintf("Seed%d_%s_n%d_null%g", 
                         seed, 
                         "bin", 
-                        VH$getLength(), 
+                        VH$get_length(), 
                         null_value))
 full_folder_name <- file.path("Data", folder_name)
 
@@ -65,17 +65,17 @@ mfitness <- memoise::memoise(concProb_glm_fastglm)
 # random suggestion sample 
 suggestions <- matrix(as.double(NA), 
                       nrow = 9, 
-                      ncol = VH$getLength())
+                      ncol = VH$get_length())
 for(j in 1:9) { 
-  positions <- sample.int(n = VH$getLength(), 
+  positions <- sample.int(n = VH$get_length(), 
                           size = 5)
-  suggestion <- rep(0,  VH$getLength())
+  suggestion <- rep(0,  VH$get_length())
   suggestion[positions] <- 1
   
   suggestions[j,] <- suggestion
 }
 
-suggestions <- rbind(VH$getCoding(vars), 
+suggestions <- rbind(VH$get_coding(vars), 
                      suggestions)
 
 
