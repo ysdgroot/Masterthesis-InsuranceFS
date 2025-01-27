@@ -3,7 +3,8 @@ install.packages(c("data.table",
                    "plyr", 
                    "devFunc", 
                    "mgcv", 
-                   "speedglm"))
+                   "speedglm", 
+                   "fastglm"))
 install.packages("CASdatasets")
 
 install.packages("devtools")

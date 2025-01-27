@@ -6,6 +6,7 @@ library(devFunc)
 library(mgcv)
 library(fastConcProb)
 library(speedglm)
+library(fastglm)
 
 library(CASdatasets)
 
