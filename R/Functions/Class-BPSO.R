@@ -17,7 +17,8 @@ R6::R6Class("SwarmBPSO",
                                     particle_generator, 
                                     w, 
                                     k1, 
-                                    k2){
+                                    k2, 
+                                    seed = NULL){
                 
                 if (!("BPG-Velocity" %in% class(particle_generator))){
                   stop("Particle should be of class 'BPG-Velocity'")
@@ -26,7 +27,8 @@ R6::R6Class("SwarmBPSO",
                 super$initialize(population_size,
                                 n_bits, 
                                 transferFun, 
-                                particle_generator)
+                                particle_generator, 
+                                seed = seed)
                 
                 self$w <- w
                 self$k1 <- k1

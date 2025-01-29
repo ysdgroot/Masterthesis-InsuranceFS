@@ -22,7 +22,8 @@ R6::R6Class("SwarmBAOA",
                                     k, 
                                     minMoa, 
                                     maxMoa,
-                                    delta = 1e-8){
+                                    delta = 1e-8, 
+                                    seed = seed){
                 
                 if (!("BPG" %in% class(particle_generator))){
                   stop("Particle should be of class 'BPG'")
@@ -31,7 +32,8 @@ R6::R6Class("SwarmBAOA",
                 super$initialize(population_size,
                                  n_bits, 
                                  transferFun, 
-                                 particle_generator)
+                                 particle_generator, 
+                                 seed = seed)
                 
                 self$beta <- beta
                 self$k <- k

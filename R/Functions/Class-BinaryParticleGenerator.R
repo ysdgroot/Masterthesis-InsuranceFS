@@ -26,7 +26,6 @@ R6::R6Class("BPG",
                                     chance_bit = 0.5, 
                                     suggestions = NULL){
                 if(!("Particle" %in% get_full_inheritance(generator))){
-                  #TODO: check for inherit from different levels
                   stop("Generator should inherit from Particle")
                 }
                 if(chance_bit >= 1 || chance_bit <= 0){
@@ -48,7 +47,7 @@ R6::R6Class("BPG",
               get = function(size, 
                              n_bits,
                              seed = NULL){
-                if(!is.null(seed)){set.seed(seed)}
+                set.seed(seed)
                 
                 # Construction of the particles
                 listParticles <- list()

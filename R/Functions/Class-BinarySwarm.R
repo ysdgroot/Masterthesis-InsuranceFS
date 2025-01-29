@@ -12,10 +12,12 @@ R6::R6Class("BinarySwarm",
               #' @param n_bits integer, number of bits to be represented
               #' @param transferFun object of class `TransferFunction`
               #' @param particleGenerator object of class `BPG`
+              #' @param seed seed for the generation of the population
               initialize = function(population_size,
                                    n_bits, 
                                    transferFun, 
-                                   particle_generator){
+                                   particle_generator, 
+                                   seed = NULL){
                 # checks
                 if(!("BPG" %in% class(particle_generator))){
                   stop("particle_generator should be of class 'BPG' ")
@@ -45,10 +47,10 @@ R6::R6Class("BinarySwarm",
                 private$iteration <- 1
                 private$max_iteration <- 30
                 
-                
                 # particle_generator returns list of elements 
                 private$population <- particle_generator$get(population_size, 
-                                                            n_bits)
+                                                            n_bits, 
+                                                            seed = seed)
               },
               get_population = function(){
                 return(private$population)
@@ -83,7 +85,7 @@ R6::R6Class("BinarySwarm",
                                      show_process = TRUE, 
                                      seed = NULL){
                 
-                if(!is.null(seed)){set.seed(seed)} 
+                set.seed(seed) 
                 
                 private$has_run <- TRUE
                 private$max_iteration <- max_iter
