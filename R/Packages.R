@@ -14,4 +14,7 @@ library(memoise)
 library(parallel)
 library(doParallel)
 
+library(sigmoid)
 library(caret)
+
+library(crayon)
