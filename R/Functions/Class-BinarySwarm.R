@@ -97,6 +97,9 @@ R6::R6Class("BinarySwarm",
                   if (show_process) {
                     cat(sprintf("Iteration: %d \n", i))
                   }
+                  
+                  private$iteration <- i
+                  
                   # get all the results of the particles
                   results <- private$get_results(fun, 
                                                  args_fun)
