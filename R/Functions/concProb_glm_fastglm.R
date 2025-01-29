@@ -119,6 +119,14 @@ concProb_glm_fastglm <- function(coding,
                  type))
   }
   
+  # theoretical values -- only happens when none of the variables are used
+  if (is.nan(result_testdata)) {
+    result_testdata <- 0.5
+  }
+  if (is.nan(result_traindata)) {
+    result_traindata <- 0.5
+  }
+  
   # remove the NullValue such that the selection is better 
   result <- result_testdata - nullValue
   
