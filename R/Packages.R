@@ -13,3 +13,5 @@ library(CASdatasets)
 library(memoise) 
 library(parallel)
 library(doParallel)
+
+library(caret)
