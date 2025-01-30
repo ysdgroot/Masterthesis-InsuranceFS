@@ -18,3 +18,5 @@ library(sigmoid)
 library(caret)
 
 library(crayon)
+
+library(collapse)

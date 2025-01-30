@@ -4,7 +4,15 @@ install.packages(c("data.table",
                    "devFunc", 
                    "mgcv", 
                    "speedglm", 
-                   "fastglm"))
+                   "fastglm", 
+                   "caret", 
+                   "collapse", 
+                   "crayon", 
+                   "memoise", 
+                   "sigmoid", 
+                   "Matrix", 
+                   "parallel", 
+                   "doParallel"))
 install.packages("CASdatasets")
 
 install.packages("devtools")
