@@ -58,8 +58,16 @@ R6::R6Class("TransferFunction",
                 } else{ 
                   stop("Type is not correct")  
                 }
+              }, 
+              get_name = function(){
+                return(private$name)
+              }, 
+              get_type = function(){
+                return(private$type)
+              }, 
+              get_fun = function(){
+                return(private$fun)
               }
-              
             ), 
             private = list(name = NULL,
                            fun = NULL, 
