@@ -95,7 +95,7 @@ R6::R6Class("BinarySwarm",
                 
                 for(i in 1:max_iter){
                   if (show_process) {
-                    cat(sprintf("Iteration: %d \n", i))
+                    cat(sprintf("\r Iteration: %d", i))
                   }
                   
                   private$iteration <- i
@@ -119,6 +119,10 @@ R6::R6Class("BinarySwarm",
                   # update the positions of all particles
                   private$update_all_positions()
                   
+                }
+                if (show_process) {
+                  # put the other everything on a new line
+                  cat("\n")
                 }
                 return(list(AllResults = all_results, 
                             BestResult = private$global_best))
