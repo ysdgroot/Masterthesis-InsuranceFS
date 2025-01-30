@@ -4,7 +4,8 @@ source(file.path("R", "Packages.R"))
 # source all the functions in the folder Functions
 sapply(list.files(file.path("R", "Functions"), 
                   pattern = "*.R", 
-                  full.names = TRUE), 
+                  full.names = TRUE, 
+                  recusive = TRUE), 
        FUN = "source", 
        echo = FALSE, 
        prompt.echo = FALSE)

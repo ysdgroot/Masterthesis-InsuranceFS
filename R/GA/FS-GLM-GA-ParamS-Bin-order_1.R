@@ -1,24 +1,7 @@
-# using the GA library to create the Feature selection method for the GLM model 
-
-# website where the Feature Selection is performed 
-# https://towardsdatascience.com/feature-selection-using-genetic-algorithms-in-r-3d9252f1aa66
-
-# some example of the GA algorithm
-# https://cran.r-project.org/web/packages/GA/vignettes/GA.html
-
 # Importing library -------------------------------------------------------
 
-library(GA)
 source(file.path("R", "Packages.R"))
 source(file.path("R", "General Parameters.R"))
-
-# source all the functions for the GA
-sapply(list.files(file.path("R", "GA"), 
-                  pattern = "*.R", 
-                  full.names = TRUE), 
-       FUN = "source", 
-       echo = FALSE, 
-       prompt.echo = FALSE)
 
 # Model run ---------------------------------------------------------------
 

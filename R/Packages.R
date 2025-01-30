@@ -20,3 +20,6 @@ library(caret)
 library(crayon)
 
 library(collapse)
+
+# own written package 
+library(GA)
