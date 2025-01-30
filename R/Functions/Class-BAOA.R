@@ -192,8 +192,10 @@ R6::R6Class("SwarmBAOA",
                             # update position of each particle 
                             for(particle in private$population){
                               result_i <- result[i, ]
-                              new_position <- private$transferFun$changePosition(result_i, 
+                              position <- particle$get_position()
+                              new_position <- private$transferFun$changePosition(position, 
                                                                                  result_i)
+                        
                               particle$set_position(new_position)
                               i <- i + 1
                             }
