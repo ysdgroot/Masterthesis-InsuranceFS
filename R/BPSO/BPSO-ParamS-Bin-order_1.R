@@ -12,11 +12,13 @@ w <- seq(0.1, 2.1, 0.5)
 list_transfun <- c(baseClassTransferFunctions$S1, 
                    baseClassTransferFunctions$V1, 
                    baseClassTransferFunctions$V2)
+pop_size <- seq(10, 25, 5)
 
 base_tests <- expand.grid("k1" = k1, 
                           "k2" = k2, 
                           "w" = w, 
-                          "TransFun" = list_transfun)
+                          "TransFun" = list_transfun, 
+                          "Popsize" = pop_size)
 setDT(base_tests)
 base_tests[, ID := .I]
 
@@ -25,7 +27,6 @@ list_results <- list()
 
 # base parameters 
 max_iter <- 30 
-pop_size <- 10
 max_stable <- 10
 
 for (ifold in 1:nfolds) {
@@ -54,7 +55,7 @@ for (ifold in 1:nfolds) {
     BPSO_gen <- BPG_Velocity$new(ParticleBPSO, 
                                  chance_bit = 0.2,
                                  suggestions = NULL)
-    BPSO_swarm <- SwarmBPSO$new(pop_size, 
+    BPSO_swarm <- SwarmBPSO$new(base_tests[i,]$Popsize, 
                                 VH$get_length(), 
                                 transferFun = base_tests[i,][["TransFun"]][[1]], 
                                 BPSO_gen, 
@@ -107,8 +108,9 @@ base_tests_temp[, TransFunName := as.character(lapply(TransFun, \(x) x$get_name(
 base_tests_temp[, TransFun := NULL]
 
 dt_results_cv_bpso <- dt_results_cv_bpso |> 
-  join(base_tests_temp, 
-       by = 'ID')
+  collapse::join(base_tests_temp, 
+                 on = 'ID', 
+                 how = "left")
 
 saveRDS(dt_results_cv_bpso, 
         file.path("Data", 

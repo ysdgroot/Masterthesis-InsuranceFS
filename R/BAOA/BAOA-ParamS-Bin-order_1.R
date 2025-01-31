@@ -13,12 +13,14 @@ maxMoa <- seq(0.6, 0.9, 0.1)
 list_transfun <- c(baseClassTransferFunctions$S1, 
                    baseClassTransferFunctions$V1, 
                    baseClassTransferFunctions$V2)
+pop_size <- seq(10, 25, 5)
 
 base_tests <- expand.grid("beta" = beta, 
                           "k" = k, 
                           "minMoa" = minMoa, 
                           "maxMoa" = maxMoa, 
-                          "TransFun" = list_transfun)
+                          "TransFun" = list_transfun, 
+                          "Popsize" = pop_size)
 setDT(base_tests)
 base_tests[, ID := .I]
 
@@ -27,7 +29,6 @@ list_results <- list()
 
 # base parameters 
 max_iter <- 30 
-pop_size <- 10
 max_stable <- 10
 
 for (ifold in 1:nfolds) {
@@ -56,7 +57,7 @@ for (ifold in 1:nfolds) {
     BAOA_gen <- BPG$new(ParticleBAOA,
                        chance_bit = 0.2,
                        suggestions = NULL)
-    BAOA_swarm <- SwarmBAOA$new(pop_size, 
+    BAOA_swarm <- SwarmBAOA$new(base_tests[i,]$Popsize, 
                                 VH$get_length(), 
                                 transferFun = base_tests[i,][["TransFun"]][[1]], 
                                 BAOA_gen, 
