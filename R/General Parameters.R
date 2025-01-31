@@ -5,7 +5,7 @@ source(file.path("R", "Packages.R"))
 sapply(list.files(file.path("R", "Functions"), 
                   pattern = "*.R", 
                   full.names = TRUE, 
-                  recusive = TRUE), 
+                  recursive = TRUE), 
        FUN = "source", 
        echo = FALSE, 
        prompt.echo = FALSE)
