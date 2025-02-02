@@ -2,6 +2,7 @@
 
 source(file.path("R", "Packages.R"))
 
+source(file.path("R", "Config-order1.R"))
 source(file.path("R", "General Parameters.R"))
 
 # Parameter Selection  ----------------------------------------------------
@@ -113,7 +114,8 @@ dt_results_cv_bpso <- dt_results_cv_bpso |>
                  how = "left")
 
 saveRDS(dt_results_cv_bpso, 
-        file.path("Data", 
-                  "Parameters", 
-                  "Param_BPSO_bin.RDS"))
+        sprintf(file.path("Data", 
+                          "Parameters", 
+                          "Param_BPSO_bin_order%d.RDS"), 
+                order))
 

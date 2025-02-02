@@ -2,6 +2,7 @@
 
 source(file.path("R", "Packages.R"))
 source(file.path("R", "General Parameters.R"))
+source(file.path("R", "Config-order1.R"))
 
 # Parameter Selection  ----------------------------------------------------
 # number of elits 
@@ -135,7 +136,8 @@ dt_results_cv_ga <- dt_results_cv_ga |>
                  how = "left")
 
 saveRDS(dt_results_cv_ga, 
-        file.path("Data", 
-                  "Parameters", 
-                  "Param_GA_bin.RDS"))
+        sprintf(file.path("Data", 
+                          "Parameters", 
+                          "Param_GA_bin_order%d.RDS"), 
+                order))
 

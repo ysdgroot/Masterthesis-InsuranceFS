@@ -3,6 +3,7 @@
 source(file.path("R", "Packages.R"))
 
 source(file.path("R", "General Parameters.R"))
+source(file.path("R", "Config-order1.R"))
 
 # Parameter Selection  ----------------------------------------------------
 # Best selection by Best found and Least number of iterations 
@@ -116,7 +117,8 @@ dt_results_cv_baoa <- dt_results_cv_baoa |>
        how = "left")
 
 saveRDS(dt_results_cv_baoa, 
-        file.path("Data", 
+        sprintf(file.path("Data", 
                   "Parameters", 
-                  "Param_BAOA_bin.RDS"))
+                  "Param_BAOA_bin_order%d.RDS"), 
+                order))
 
