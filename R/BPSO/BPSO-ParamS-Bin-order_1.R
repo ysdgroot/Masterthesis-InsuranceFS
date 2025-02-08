@@ -2,23 +2,20 @@
 
 source(file.path("R", "Packages.R"))
 
-source(file.path("R", "Config-order1.R"))
 source(file.path("R", "General Parameters.R"))
+source(file.path("R", "Config-order1.R"))
 
 # Parameter Selection  ----------------------------------------------------
 # Best selection by Best found and Least number of iterations 
 k1 <- seq(1, 6, 0.5) 
 k2 <- seq(1, 6, 0.5)
 w <- seq(0.1, 2.1, 0.5)
-list_transfun <- c(baseClassTransferFunctions$S1, 
-                   baseClassTransferFunctions$V1, 
-                   baseClassTransferFunctions$V2)
 pop_size <- seq(10, 25, 5)
 
 base_tests <- expand.grid("k1" = k1, 
                           "k2" = k2, 
                           "w" = w, 
-                          "TransFun" = list_transfun, 
+                          "TransFun" = baseClassTransferFunctions, 
                           "Popsize" = pop_size)
 setDT(base_tests)
 base_tests[, ID := .I]
@@ -29,6 +26,8 @@ list_results <- list()
 # base parameters 
 max_iter <- 30 
 max_stable <- 10
+
+total_runs <- nrow(base_tests)
 
 for (ifold in 1:nfolds) {
   cat(crayon::blue(sprintf("Start Fold: %d ---------------- \n", 
@@ -49,9 +48,10 @@ for (ifold in 1:nfolds) {
   dir.create(full_folder_name, showWarnings = FALSE)
   
   for (i in 1:nrow(base_tests)) {
-    cat(crayon::blue(sprintf("Fold: %d \n \t Run: %d \n", 
+    cat(crayon::blue(sprintf("Fold: %d \t Run: %d/%d \n", 
                              ifold, 
-                             i)))
+                             i, 
+                             total_runs)))
     
     BPSO_gen <- BPG_Velocity$new(ParticleBPSO, 
                                  chance_bit = 0.2,

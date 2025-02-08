@@ -11,16 +11,13 @@ beta <- seq(4.9, 5.1, 0.05)
 k <- seq(0.2, 0.8, 0.1)
 minMoa <- seq(0.1, 0.4, 0.1)
 maxMoa <- seq(0.6, 0.9, 0.1)
-list_transfun <- c(baseClassTransferFunctions$S1, 
-                   baseClassTransferFunctions$V1, 
-                   baseClassTransferFunctions$V2)
 pop_size <- seq(10, 25, 5)
 
 base_tests <- expand.grid("beta" = beta, 
                           "k" = k, 
                           "minMoa" = minMoa, 
                           "maxMoa" = maxMoa, 
-                          "TransFun" = list_transfun, 
+                          "TransFun" = baseClassTransferFunctions, 
                           "Popsize" = pop_size)
 setDT(base_tests)
 base_tests[, ID := .I]
@@ -31,6 +28,8 @@ list_results <- list()
 # base parameters 
 max_iter <- 30 
 max_stable <- 10
+
+total_runs <- nrow(base_tests)
 
 for (ifold in 1:nfolds) {
   cat(crayon::blue(sprintf("Start Fold: %d ------------------------------------------------  \n", 
@@ -51,9 +50,10 @@ for (ifold in 1:nfolds) {
   dir.create(full_folder_name, showWarnings = FALSE)
   
   for (i in 1:nrow(base_tests)) {
-    cat(crayon::blue(sprintf("Fold: %d \n \t Run: %d \n", 
+    cat(crayon::blue(sprintf("Fold: %d \t Run: %d/%d \n", 
                              ifold, 
-                             i)))
+                             i, 
+                             total_runs)))
     
     BAOA_gen <- BPG$new(ParticleBAOA,
                        chance_bit = 0.2,

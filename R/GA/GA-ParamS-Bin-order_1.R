@@ -51,6 +51,8 @@ list_results <- list()
 max_iter <- 30 
 max_stable <- 10
 
+total_runs <- nrow(base_tests)
+
 for (ifold in 1:nfolds) {
   cat(crayon::blue(sprintf("Start Fold: %d ---------------- \n", 
                            ifold)))
@@ -70,9 +72,10 @@ for (ifold in 1:nfolds) {
   dir.create(full_folder_name, showWarnings = FALSE)
   
   for (i in 1:nrow(base_tests)) {
-    cat(crayon::blue(sprintf("Fold: %d \n \t Run: %d \n", 
+    cat(crayon::blue(sprintf("Fold: %d \t Run: %d/%d \n", 
                              ifold, 
-                             i)))
+                             i, 
+                             total_runs)))
     
     GA_sim <- ga(fitness = mfitness, 
                        trainDT = trainDT, 
