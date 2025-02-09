@@ -58,6 +58,9 @@ concProb_glm_fastglm <- function(coding,
                  type))
   }
   
+  # need to do this, otherwise results without main variables are not correct
+  coding <- variableHandler$get_coding(VH$get_variables(coding, withMain = withMain))
+  
   # first to check
   if (!is.null(location_save)){
     if(!dir.exists(location_save)){
