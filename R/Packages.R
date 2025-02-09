@@ -23,3 +23,6 @@ library(collapse)
 
 # own written package 
 library(GA)
+
+# for boosting algorithm
+library(xgboost)

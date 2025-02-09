@@ -17,3 +17,11 @@ install.packages("CASdatasets")
 
 install.packages("devtools")
 devtools::install_github("JolienPonnet/fastConcProb")
+
+# package of GA
+devtools::install_github("ysdgroot/GA")
+
+install.packages("xgboost")
+
+
+
