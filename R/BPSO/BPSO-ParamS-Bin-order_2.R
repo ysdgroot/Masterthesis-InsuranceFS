@@ -31,6 +31,7 @@ list_results <- list()
 # base parameters 
 max_iter <- 30 
 max_stable <- 10
+withMain <- TRUE
 
 total_runs <- nrow(base_tests)
 
@@ -82,7 +83,8 @@ for (ifold in 1:nfolds) {
                                          type = "bin", 
                                          offset = "exposure", 
                                          targetVar = "claimNumber", 
-                                         location_save = full_folder_name
+                                         location_save = full_folder_name, 
+                                         withMain = withMain
                                        ), 
                                        seed = 123)
     
