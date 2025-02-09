@@ -22,5 +22,8 @@ best_param_run <- function(all_results){
                    on = "ID", 
                    how = "left")
   
+  # remove the Fold column 
+  avg_results[, Fold := NULL]
+  
   return(avg_results[order(-AvgResult)])
 }

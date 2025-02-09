@@ -4,32 +4,6 @@ source(file.path("R", "Packages.R"))
 source(file.path("R", "General Parameters.R"))
 
 
-# Helper functions ---------------------------------------------------------
-
-get_save_location <- function(algo, 
-                              order){
-  
-  save_location <- file.path("Data", 
-                             "Parameters", 
-                             sprintf("Best_%s_order_%d.RDS",
-                                     algo,
-                                     order))
-  return(save_location)
-}
-
-get_file_location <- function(algo, 
-                              order, 
-                              type = "bin"){
-  file_location <- file.path("Data", 
-                             "Parameters", 
-                              sprintf("Param_%s_%s_order%d.RDS",
-                              algo, 
-                              type,
-                              order))
-  
-  return(file_location)
-}
-
 # Best parameters ---------------------------------------------------------
 # BAOA --------------------------------------------------------------------
 
@@ -40,16 +14,26 @@ order <- 1
 dt_results_cv <- readRDS(get_file_location(algo = algo, 
                                            order = order))
 
-best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
+best_results <- best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
 
+# continuous parameters
+avg_best_results <- best_results[ ,.(AvgBeta = mean(beta), 
+                                      Avgk = mean(k), 
+                                      AvgMinMoa = mean(minMoa), 
+                                      AvgMaxMoa = mean(maxMoa),
+                                      AvgPopsize = mean(Popsize))]
+
+# categorical parameters
+best_results[ ,.(Count = .N), 
+              by = "TransFunName"][order(-Count)]
 
 # best selection 
-best_results_BAOA <- data.table(beta = 5, 
-                                k = 0.2, 
-                                minMoa = 0.3, 
-                                maxMoa = 0.6, 
+best_results_BAOA <- data.table(beta = avg_best_results$AvgBeta, 
+                                k = avg_best_results$Avgk, 
+                                minMoa =avg_best_results$AvgMinMoa, 
+                                maxMoa = avg_best_results$AvgMaxMoa, 
                                 TransFunName = "V3", 
-                                Popsize = 10)
+                                Popsize = avg_best_results$AvgMaxMoa)
 
 save_location <- get_save_location(algo, order)
 
@@ -63,16 +47,26 @@ order <- 2
 dt_results_cv <- readRDS(get_file_location(algo = algo, 
                                            order = order))
 
-best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
+best_results <- best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
 
+# continuous parameters
+avg_best_results <- best_results[ ,.(AvgBeta = mean(beta), 
+                                     Avgk = mean(k), 
+                                     AvgMinMoa = mean(minMoa), 
+                                     AvgMaxMoa = mean(maxMoa),
+                                     AvgPopsize = mean(Popsize))]
+
+# categorical parameters
+best_results[ ,.(Count = .N), 
+              by = "TransFunName"][order(-Count)]
 
 # best selection 
-best_results_BAOA <- data.table(beta = 0, 
-                                k = 0, 
-                                minMoa = 0, 
-                                maxMoa = 0, 
-                                TransFunName = "", 
-                                Popsize = 0)
+best_results_BAOA <- data.table(beta = avg_best_results$AvgBeta, 
+                                k = avg_best_results$Avgk, 
+                                minMoa =avg_best_results$AvgMinMoa, 
+                                maxMoa = avg_best_results$AvgMaxMoa, 
+                                TransFunName = "V3", 
+                                Popsize = avg_best_results$AvgMaxMoa)
 
 
 save_location <- get_save_location(algo, order)
@@ -87,17 +81,26 @@ order <- 1
 dt_results_cv <- readRDS(get_file_location(algo = algo, 
                                            order = order))
 
-best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
+best_results <- best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
 
+# continuous parameters
+avg_best_results <- best_results[ ,.(Avgk1 = mean(k1), 
+                                     Avgk2 = mean(k2), 
+                                     Avgw = mean(w), 
+                                     AvgPopsize = mean(Popsize))]
+
+# categorical parameters
+best_results[ ,.(Count = .N), 
+              by = "TransFunName"][order(-Count)]
 
 # this is some manual selection, because the results are close
 
 # best selection 
-best_results_BPSO <- data.table(k1 = 5, 
-                                k2 = 2.5, 
-                                w = 1.1, 
+best_results_BPSO <- data.table(k1 = avg_best_results$Avgk1, 
+                                k2 = avg_best_results$Avgk2, 
+                                w = avg_best_results$Avgw, 
                                 TransFunName = "V2", 
-                                Popsize = 20)
+                                Popsize = avg_best_results$AvgPopsize)
 
 save_location <- get_save_location(algo, order)
 
@@ -113,16 +116,26 @@ order <- 2
 dt_results_cv <- readRDS(get_file_location(algo = algo, 
                                            order = order))
 
-best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
+best_results <- best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
+
+# continuous parameters
+avg_best_results <- best_results[ ,.(Avgk1 = mean(k1), 
+                                     Avgk2 = mean(k2), 
+                                     Avgw = mean(w), 
+                                     AvgPopsize = mean(Popsize))]
+
+# categorical parameters
+best_results[ ,.(Count = .N), 
+              by = "TransFunName"][order(-Count)]
 
 # this is some manual selection, because the results are close
 
 # best selection 
-best_results_BPSO <- data.table(k1 = 0, 
-                                k2 = 0, 
-                                w = 0, 
+best_results_BPSO <- data.table(k1 = avg_best_results$Avgk1, 
+                                k2 = avg_best_results$Avgk2, 
+                                w = avg_best_results$Avgw, 
                                 TransFunName = "V2", 
-                                Popsize = 0)
+                                Popsize = avg_best_results$AvgPopsize)
 
 save_location <- get_save_location(algo, order)
 
@@ -137,16 +150,27 @@ order <- 1
 dt_results_cv <- readRDS(get_file_location(algo = algo, 
                                            order = order))
 
-best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
+best_results <- best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
+
+# continuous parameters
+avg_best_results <- best_results[ ,.(AvgNelits = round(mean(n_elits)), 
+                                     AvgPcrossover = mean(p_crossover), 
+                                     AvgPmutation = mean(p_mutation), 
+                                     AvgPopsize = mean(pop_size))]
+
+# categorical parameters
+best_results[ ,.(Count = .N), 
+              by = "NameSelection"][order(-Count)]
+
 
 # this is some manual selection, because the results are close
 
 # best selection 
-best_results_GA <- data.table(n_elits = 4, 
-                              pop_size = 25, 
-                              p_crossover = 0.6, 
-                              p_mutation = 0.4, 
-                              name_selection = "linear")
+best_results_GA <- data.table(n_elits = avg_best_results$AvgNelits, 
+                              pop_size = avg_best_results$AvgPopsize, 
+                              p_crossover = avg_best_results$AvgPcrossover, 
+                              p_mutation = avg_best_results$AvgPmutation, 
+                              NameSelection = "linear")
 
 
 save_location <- get_save_location(algo, order)
@@ -162,17 +186,27 @@ order <- 2
 dt_results_cv <- readRDS(get_file_location(algo = algo, 
                                            order = order))
 
-best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
+best_results <- best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
+
+# continuous parameters
+avg_best_results <- best_results[ ,.(AvgNelits = round(mean(n_elits)), 
+                                     AvgPcrossover = mean(p_crossover), 
+                                     AvgPmutation = mean(p_mutation), 
+                                     AvgPopsize = mean(pop_size))]
+
+# categorical parameters
+best_results[ ,.(Count = .N), 
+              by = "NameSelection"][order(-Count)]
 
 
 # this is some manual selection, because the results are close
 
 # best selection 
-best_results_GA <- data.table(n_elits = 4, 
-                              pop_size = 25, 
-                              p_crossover = 0.6, 
-                              p_mutation = 0.4, 
-                              name_selection = "linear")
+best_results_GA <- data.table(n_elits = avg_best_results$AvgNelits, 
+                              pop_size = avg_best_results$AvgPopsize, 
+                              p_crossover = avg_best_results$AvgPcrossover, 
+                              p_mutation = avg_best_results$AvgPmutation, 
+                              NameSelection = "linear")
 
 
 save_location <- get_save_location(algo, order)
