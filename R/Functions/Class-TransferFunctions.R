@@ -41,7 +41,7 @@ R6::R6Class("TransferFunction",
               #' based on the velocity the next binary positions are produced  
               #'
               #' @returns transfer the final results
-              changePosition = function(x, velocity){
+              changePosition = function(x, velocity, use_var_importance = FALSE){
                 rand <- runif(length(x))
                 if("matrix" %in% class(x)){
                   rand <- matrix(rand, 
@@ -51,8 +51,20 @@ R6::R6Class("TransferFunction",
                 
                 transferedy <- self$transfer(velocity)
                 if(private$type == "S"){
+                  if (use_var_importance){
+                    return(list(1 * (rand < transferedy), 
+                                "TransferValues" = transferedy))
+                  }
                   return( 1 * (rand < transferedy))
                 } else if(private$type == "V"){
+                  if (use_var_importance){
+                    return(list(1 * ((rand < transferedy) * abs(x - 1) +
+                                       (rand >= transferedy) * x), 
+                                "TransferValues" = 1 * ((rand < transferedy) * transferedy  +
+                                                          (rand >= transferedy) * (1-transferedy)) * 
+                                  ( 1 - 2 * x)  
+                                ))
+                  }
                   return(1 * ((rand < transferedy) * abs(x - 1) +
                            (rand >= transferedy) * x))
                 } else{ 

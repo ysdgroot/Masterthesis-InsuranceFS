@@ -17,6 +17,7 @@ R6::R6Class("BinarySwarm",
                                    n_bits, 
                                    transferFun, 
                                    particle_generator, 
+                                   use_var_importance = FALSE, 
                                    seed = NULL){
                 # checks
                 if(!("BPG" %in% class(particle_generator))){
@@ -35,10 +36,12 @@ R6::R6Class("BinarySwarm",
                 }
                 # end checks
                 
-                
                 private$population_size <- population_size
                 private$n_bits <- n_bits
                 private$transferFun <- transferFun 
+                private$use_var_importance <- use_var_importance
+                
+                private$variable_importance <- list()
                 
                 # set the global best
                 private$global_best <- list("Position" = 0, 
@@ -65,6 +68,27 @@ R6::R6Class("BinarySwarm",
               #'
               #' @returns integer 
               get_iteration = function(){return(private$iteration)},
+              #' @description
+              #' Returns logical if it uses to calculate the variable importance
+              #'
+              #' @returns logical 
+              get_use_variable_importance = function(){
+                return(private$use_var_importance)
+              }, 
+              #' @description
+              #' Returns the variable importance  
+              #' This is just testing the results
+              #'
+              #' @returns list 
+              get_variable_importance = function(){
+                return(private$variable_importance)
+              }, 
+              add_variable_importance = function(x){
+                # add the results to the variable importance
+                position <- length(private$variable_importance) + 1
+                private$variable_importance[[position]] <- matrix(unlist(x), 
+                                                                  ncol = private$n_bits)
+              }, 
               #' @description
               #' Run the Swarm-based algorithm 
               #'
@@ -145,6 +169,10 @@ R6::R6Class("BinarySwarm",
               iteration = NULL, 
               #' @field max_iteration integer, maximum number of iterations to perform
               max_iteration = NULL, 
+              #' @field use_var_importance logical, if the variable importance should be used 
+              use_var_importance = NULL, 
+              #' @field variable_importance list of length `n_bits` to store the feature importance
+              variable_importance = NULL,
               update_all_positions = function(){
                  stop("Should be implemented in the subclass")
               }, 
