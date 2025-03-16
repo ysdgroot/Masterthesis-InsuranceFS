@@ -148,10 +148,21 @@ R6::R6Class("BinarySwarm",
                   # put the other everything on a new line
                   cat("\n")
                 }
-                return(list(AllResults = all_results, 
+                
+                # convert the results into a proper format (data.table)
+                total_list <- data.table()
+                for (iter in 1:length(all_results)) {
+                  
+                  result_iter <- rbindlist(all_results[[iter]]$AllResults)
+                  result_iter[, Iteration := iter]
+                  
+                  total_list <- rbindlist(list(total_list, 
+                                               result_iter))
+                }
+                
+                return(list(AllResults = total_list, 
                             BestResult = private$global_best))
-              }
-            ),
+              }),
             private = list(
               #' @field population_size integer, size of population
               population_size = NULL, 
