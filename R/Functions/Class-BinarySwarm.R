@@ -45,7 +45,7 @@ R6::R6Class("BinarySwarm",
                 
                 # set the global best
                 private$global_best <- list("Position" = 0, 
-                                            "Result" = 0)
+                                            "Result" = -Inf)
                 private$has_run <- FALSE
                 private$iteration <- 1
                 private$max_iteration <- 30
@@ -106,6 +106,8 @@ R6::R6Class("BinarySwarm",
                                      args_fun = list(), 
                                      max_iter = 30, 
                                      max_stable = 5, 
+                                     pos_fun = 1, 
+                                     is_maximize = TRUE,
                                      show_process = TRUE, 
                                      seed = NULL){
                 
@@ -126,7 +128,9 @@ R6::R6Class("BinarySwarm",
                   
                   # get all the results of the particles
                   results <- private$get_results(fun, 
-                                                 args_fun)
+                                                 args_fun, 
+                                                 pos_fun = pos_fun, 
+                                                 is_maximize = is_maximize)
                   
                   has_global_best <- private$set_global_best(results)
                   
@@ -221,13 +225,16 @@ R6::R6Class("BinarySwarm",
               #' Only the first element will be used to maximize. 
               #' This can be useful in case other results should to be monitored but should not optimized. 
               #' @param argsFun list with arguments passed to `fun`
+              #' @param pos_fun position to be used of the output
+              #' @param is_maximize logical, if the result should be maximized. 
+              #' if FALSE, the negative will be given. 
               #'
               #' @returns list with 3 elements with names:
               #' `Result` list with all the output results 
               #' `Positions` list with all the positions checked
               #' `AllResults` list with the results which should be optimized 
               #' The results and positions are in the same order of each other
-               get_results = function(fun, argsFun){
+               get_results = function(fun, argsFun, pos_fun = 1, is_maximize = TRUE){
                  results <- list() # results to optimize
                  positions <- list() # positions
                  all_result <- list() # all results that are given 
@@ -238,7 +245,12 @@ R6::R6Class("BinarySwarm",
                    results_part <- do.call(fun, 
                                      args = append(list(position), argsFun))
                    # first element is to maximize
-                   result <- results_part[[1]]
+                   result <- results_part[[pos_fun]]
+                   
+                   # then update result so that it would maximize
+                   if (!is_maximize) {
+                     result <- -result
+                   }
                    
                    #save result in the particle
                    part$save_result(result)
