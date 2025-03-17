@@ -13,6 +13,8 @@ R6::R6Class("BinarySwarm",
               #' @param transferFun object of class `TransferFunction`
               #' @param particleGenerator object of class `BPG`
               #' @param seed seed for the generation of the population
+              #' @param use_var_importance (Experimental) logical
+              #' If variable importance can be done using transfer functions
               initialize = function(population_size,
                                    n_bits, 
                                    transferFun, 
@@ -58,6 +60,10 @@ R6::R6Class("BinarySwarm",
               get_population = function(){
                 return(private$population)
               }, 
+              #' @description
+              #' Get the global best after a run
+              #'
+              #' @returns global best
               get_global_best = function(){
                 if (!private$has_run){warning("Process hasn't run yet")}
                 return(private$global_best)
@@ -83,6 +89,13 @@ R6::R6Class("BinarySwarm",
               get_variable_importance = function(){
                 return(private$variable_importance)
               }, 
+              #' @description
+              #' (Experimental)
+              #' Add values to the variable importance
+              #' 
+              #' @param x list with the values for the variable importance
+              #'
+              #' @returns none
               add_variable_importance = function(x){
                 # add the results to the variable importance
                 position <- length(private$variable_importance) + 1
@@ -186,7 +199,7 @@ R6::R6Class("BinarySwarm",
               max_iteration = NULL, 
               #' @field use_var_importance logical, if the variable importance should be used 
               use_var_importance = NULL, 
-              #' @field variable_importance list of length `n_bits` to store the feature importance
+              #' @field variable_importance (Experimental) list of length `n_bits` to store the feature importance
               variable_importance = NULL,
               update_all_positions = function(){
                  stop("Should be implemented in the subclass")

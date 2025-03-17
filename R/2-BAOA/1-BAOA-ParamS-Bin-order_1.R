@@ -1,27 +1,23 @@
 # Importing library -------------------------------------------------------
 
-source(file.path("R", "Packages.R"))
+source(file.path("R", "0-Packages.R"))
 
-source(file.path("R", "General Parameters.R"))
-source(file.path("R", "Config-order2.R"))
-
-# Parameter selection is based on the best results of order 1
-# otherwise to much compute time 
+source(file.path("R", "1-General Parameters.R"))
+source(file.path("R", "1-Config-order1.R"))
 
 # Parameter Selection  ----------------------------------------------------
 # Best selection by Best found and Least number of iterations 
-# the number of tests are decreased compared to the test of order 1
-beta <- 5
-k <- seq(0.2, 0.4, 0.1)
-minMoa <- seq(0.2, 0.4, 0.1)
-maxMoa <- seq(0.6, 0.8, 0.1)
-pop_size <- 20
+beta <- seq(4.9, 5.1, 0.05)
+k <- seq(0.2, 0.8, 0.1)
+minMoa <- seq(0.1, 0.4, 0.1)
+maxMoa <- seq(0.6, 0.9, 0.1)
+pop_size <- seq(10, 25, 5)
 
 base_tests <- expand.grid("beta" = beta, 
                           "k" = k, 
                           "minMoa" = minMoa, 
                           "maxMoa" = maxMoa, 
-                          "TransFun" = list(baseClassTransferFunctions$V3), 
+                          "TransFun" = baseClassTransferFunctions, 
                           "Popsize" = pop_size)
 setDT(base_tests)
 base_tests[, ID := .I]
@@ -32,7 +28,6 @@ list_results <- list()
 # base parameters 
 max_iter <- 30 
 max_stable <- 10
-withMain <- TRUE
 
 total_runs <- nrow(base_tests)
 
@@ -85,8 +80,7 @@ for (ifold in 1:nfolds) {
                                          type = "bin", 
                                          offset = "exposure", 
                                          targetVar = "claimNumber", 
-                                         location_save = full_folder_name, 
-                                         withMain = withMain
+                                         location_save = full_folder_name
                                        ), 
                                        seed = 123)
     

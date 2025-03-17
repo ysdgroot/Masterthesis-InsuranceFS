@@ -1,8 +1,12 @@
 # Importing library -------------------------------------------------------
 
-source(file.path("R", "Packages.R"))
-source(file.path("R", "General Parameters.R"))
-source(file.path("R", "Config-order1.R"))
+source(file.path("R", "0-Packages.R"))
+
+source(file.path("R", "1-General Parameters.R"))
+source(file.path("R", "1-Config-order2.R"))
+
+# Parameter selection is based on the best results of order 1
+# otherwise to much compute time 
 
 # Parameter Selection  ----------------------------------------------------
 # number of elits 
@@ -19,14 +23,14 @@ source(file.path("R", "Config-order1.R"))
 ####### Mutation 
 # Uniform-random --> probability
 
-n_elits <- 2:5
-pop_size <- seq(10, 25, 5)
+n_elits <- 4
+pop_size <- seq(20, 25, 5)
 
-p_crossover <- seq(0.5, 0.9, 0.1)
-p_mutation <- seq(0.1, 0.5, 0.1)
+p_crossover <- seq(0.5, 0.7, 0.1)
+p_mutation <- seq(0.3, 0.5, 0.1)
 
-name_selection <- c("linear", "nonlinear", "roulette", "tournament")
-dt_selection <- data.table(NameSelection = name_selection, 
+name_selection <- c("linear")
+dt_selection <- data.table(NameSelection = c("linear", "nonlinear", "roulette", "tournament"), 
                            Selection = c(gabin_lrSelection, 
                                          gabin_nlrSelection, 
                                          gabin_rwSelection, 
@@ -50,6 +54,7 @@ list_results <- list()
 
 max_iter <- 30 
 max_stable <- 10
+withMain <- TRUE
 
 total_runs <- nrow(base_tests)
 
@@ -85,7 +90,7 @@ for (ifold in 1:nfolds) {
                        distMod = poisson(link='log'), 
                        offset = "exposure", 
                        nullValue = 0.5,
-                       withMain = TRUE,
+                       withMain = withMain,
                        location_save = full_folder_name,
                    type = "binary", # optimization data type
                    population = gabin_Population,
@@ -103,7 +108,7 @@ for (ifold in 1:nfolds) {
                    maxiter = max_iter, # total runs or generations
                    monitor = FALSE, 
                    keepBest = TRUE, # keep the best solution at the end
-                   parallel = FALSE, # don't do parallel because it takes to much time 
+                   parallel = TRUE,  
                    seed=9876)
     
     

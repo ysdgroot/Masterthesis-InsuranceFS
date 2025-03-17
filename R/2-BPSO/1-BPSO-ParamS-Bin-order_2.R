@@ -1,22 +1,25 @@
 # Importing library -------------------------------------------------------
 
-source(file.path("R", "Packages.R"))
+source(file.path("R", "0-Packages.R"))
 
-source(file.path("R", "General Parameters.R"))
-source(file.path("R", "Config-order1.R"))
+source(file.path("R", "1-General Parameters.R"))
+source(file.path("R", "1-Config-order2.R"))
+
+# Parameter selection is based on the best results of order 1
+# otherwise to much compute time 
+
+stop("Not Implemented Yet")
 
 # Parameter Selection  ----------------------------------------------------
 # Best selection by Best found and Least number of iterations 
-beta <- seq(4.9, 5.1, 0.05)
-k <- seq(0.2, 0.8, 0.1)
-minMoa <- seq(0.1, 0.4, 0.1)
-maxMoa <- seq(0.6, 0.9, 0.1)
+k1 <- seq(1, 6, 0.5) 
+k2 <- seq(1, 6, 0.5)
+w <- seq(0.1, 2.1, 0.5)
 pop_size <- seq(10, 25, 5)
 
-base_tests <- expand.grid("beta" = beta, 
-                          "k" = k, 
-                          "minMoa" = minMoa, 
-                          "maxMoa" = maxMoa, 
+base_tests <- expand.grid("k1" = k1, 
+                          "k2" = k2, 
+                          "w" = w, 
                           "TransFun" = baseClassTransferFunctions, 
                           "Popsize" = pop_size)
 setDT(base_tests)
@@ -28,11 +31,12 @@ list_results <- list()
 # base parameters 
 max_iter <- 30 
 max_stable <- 10
+withMain <- TRUE
 
 total_runs <- nrow(base_tests)
 
 for (ifold in 1:nfolds) {
-  cat(crayon::blue(sprintf("Start Fold: %d ------------------------------------------------  \n", 
+  cat(crayon::blue(sprintf("Start Fold: %d ---------------- \n", 
                            ifold)))
   
   trainDT_fold <- inputDT[Fold != ifold]
@@ -55,20 +59,19 @@ for (ifold in 1:nfolds) {
                              i, 
                              total_runs)))
     
-    BAOA_gen <- BPG$new(ParticleBAOA,
-                       chance_bit = 0.2,
-                       suggestions = NULL)
-    BAOA_swarm <- SwarmBAOA$new(base_tests[i,]$Popsize, 
+    BPSO_gen <- BPG_Velocity$new(ParticleBPSO, 
+                                 chance_bit = 0.2,
+                                 suggestions = NULL)
+    BPSO_swarm <- SwarmBPSO$new(base_tests[i,]$Popsize, 
                                 VH$get_length(), 
                                 transferFun = base_tests[i,][["TransFun"]][[1]], 
-                                BAOA_gen, 
-                                beta = base_tests[i,]$beta, 
-                                k = base_tests[i,]$k, 
-                                minMoa = base_tests[i,]$minMoa, 
-                                maxMoa = base_tests[i,]$maxMoa, 
+                                BPSO_gen, 
+                                w = base_tests[i,]$w, 
+                                k1 = base_tests[i,]$k1, 
+                                k2 = base_tests[i,]$k2, 
                                 seed = 420)
     
-    BAOA_run <- BAOA_swarm$run_process(concProb_glm_fastglm, 
+    BPSO_run <- BPSO_swarm$run_process(concProb_glm_fastglm, 
                                        max_stable = max_stable, 
                                        max_iter = max_iter,
                                        args_fun = list(
@@ -80,27 +83,28 @@ for (ifold in 1:nfolds) {
                                          type = "bin", 
                                          offset = "exposure", 
                                          targetVar = "claimNumber", 
-                                         location_save = full_folder_name
+                                         location_save = full_folder_name, 
+                                         withMain = withMain
                                        ), 
                                        seed = 123)
     
     # save the results 
     
-    result <- data.table("nIterations" = BAOA_swarm$get_iteration(), 
-                   "BestResult" = BAOA_run$BestResult$Result, 
+    result <- data.table("nIterations" = BPSO_swarm$get_iteration(), 
+                   "BestResult" = BPSO_run$BestResult$Result, 
                    "ID" = i, 
                    "Fold" = ifold)
     cat(green(sprintf("ID: %d - nIterations: %d - Result: %g - Position: %s \n", 
                       i, 
-                      BAOA_swarm$get_iteration(), 
-                      BAOA_run$BestResult$Result, 
-                      paste(BAOA_run$BestResult$Position, collapse = ""))))
+                      BPSO_swarm$get_iteration(), 
+                      BPSO_run$BestResult$Result, 
+                      paste(BPSO_run$BestResult$Position, collapse = ""))))
     
     list_results <- append(list_results, list(result))
   }
 }
 
-dt_results_cv_baoa <- rbindlist(list_results)
+dt_results_cv_bpso <- rbindlist(list_results)
 
 dir.create(file.path("Data", 
                      "Parameters"), 
@@ -111,14 +115,14 @@ base_tests_temp <- copy(base_tests)
 base_tests_temp[, TransFunName := as.character(lapply(TransFun, \(x) x$get_name()))]
 base_tests_temp[, TransFun := NULL]
 
-dt_results_cv_baoa <- dt_results_cv_baoa |> 
+dt_results_cv_bpso <- dt_results_cv_bpso |> 
   collapse::join(base_tests_temp, 
-       on = 'ID', 
-       how = "left")
+                 on = 'ID', 
+                 how = "left")
 
-saveRDS(dt_results_cv_baoa, 
+saveRDS(dt_results_cv_bpso, 
         sprintf(file.path("Data", 
-                  "Parameters", 
-                  "Param_BAOA_bin_order%d.RDS"), 
+                          "Parameters", 
+                          "Param_BPSO_bin_order%d.RDS"), 
                 order))
 
