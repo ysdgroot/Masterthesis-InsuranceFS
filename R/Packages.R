@@ -26,3 +26,8 @@ library(GA)
 
 # for boosting algorithm
 library(xgboost)
+
+# for improvement for working with lists
+library(purrr)
+# for matrix calculations
+library(matrixStats)

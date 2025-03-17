@@ -22,6 +22,10 @@ devtools::install_github("JolienPonnet/fastConcProb")
 devtools::install_github("ysdgroot/GA")
 
 install.packages("xgboost")
+install.packages("glmnet")
+
+install.packages("purrr")
+install.packages("matrixStats")
 
 
 
