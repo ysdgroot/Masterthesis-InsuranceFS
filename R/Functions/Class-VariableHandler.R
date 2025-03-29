@@ -266,6 +266,10 @@ R6::R6Class("VariableHandler",
                                     withMain = FALSE, 
                                     message = TRUE){
                  
+                 if (is.null(variables)) {
+                   return(rep(0, self$get_length()))
+                 }
+                 
                  if(!all(variables %in% private$used_variables)){
                    setdiff_variables <- setdiff(variables,private$used_variables)
                    warning(sprintf("The following variables are not in the coding %s", 

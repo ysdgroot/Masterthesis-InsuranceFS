@@ -34,3 +34,6 @@ library(matrixStats)
 
 # Own written R-package for basic frame for Feature Selection using Population based meta-heuristics
 library(MHFS)
+
+library(glmnet)
+library(parallel)
