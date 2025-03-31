@@ -12,16 +12,16 @@ stop("Not Implemented Yet")
 
 # Parameter Selection  ----------------------------------------------------
 # Best selection by Best found and Least number of iterations 
-k1 <- seq(1, 6, 0.5) 
-k2 <- seq(1, 6, 0.5)
-w <- seq(0.1, 2.1, 0.5)
-pop_size <- seq(10, 25, 5)
+k1 <- seq(3, 5, 0.5) 
+k2 <- seq(2, 4, 0.5)
+w <- seq(0.6, 1.6, 0.5)
+pop_size <- 25
 
 base_tests <- expand.grid("k1" = k1, 
                           "k2" = k2, 
                           "w" = w, 
-                          "TransFun" = baseClassTransferFunctions, 
-                          "Popsize" = pop_size)
+                          "TransFun" = list(baseClassTransferFunctions$V2), 
+                          "Popsize" = pop_size) 
 setDT(base_tests)
 base_tests[, ID := .I]
 
@@ -71,7 +71,7 @@ for (ifold in 1:nfolds) {
                                 k2 = base_tests[i,]$k2, 
                                 seed = 420)
     
-    BPSO_run <- BPSO_swarm$run_process(concProb_glm_fastglm, 
+    BPSO_run <- BPSO_swarm$run_process(concProb_glm_fastglm,   
                                        max_stable = max_stable, 
                                        max_iter = max_iter,
                                        args_fun = list(

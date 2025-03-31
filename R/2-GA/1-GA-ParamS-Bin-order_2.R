@@ -22,9 +22,9 @@ source(file.path("R", "1-Config-order2.R"))
 
 ####### Mutation 
 # Uniform-random --> probability
-
+# values are based on the order 1 results, otherwise it would take to long
 n_elits <- 4
-pop_size <- seq(20, 25, 5)
+pop_size <- 25
 
 p_crossover <- seq(0.5, 0.7, 0.1)
 p_mutation <- seq(0.3, 0.5, 0.1)
@@ -52,8 +52,8 @@ base_tests[, ID := .I]
 # save all the results
 list_results <- list()
 
-max_iter <- 30 
-max_stable <- 10
+max_iter <- 100 
+max_stable <- 20
 withMain <- TRUE
 
 total_runs <- nrow(base_tests)
@@ -81,6 +81,8 @@ for (ifold in 1:nfolds) {
                              ifold, 
                              i, 
                              total_runs)))
+    
+    if(i %in% 1:7 & ifold == 1){next}
     
     GA_sim <- ga(fitness = mfitness, 
                        trainDT = trainDT, 

@@ -37,7 +37,7 @@ best_results_GA <- data.table(n_elits = avg_best_results$AvgNelits,
 
 save_location <- get_save_location(algo, order)
 
-saveRDS(best_results_BAOA, 
+saveRDS(best_results_GA, 
         save_location)
 
 
@@ -73,5 +73,5 @@ best_results_GA <- data.table(n_elits = avg_best_results$AvgNelits,
 
 save_location <- get_save_location(algo, order)
 
-saveRDS(best_results_BAOA, 
+saveRDS(best_results_GA, 
         save_location)

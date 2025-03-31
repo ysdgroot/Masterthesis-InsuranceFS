@@ -10,23 +10,6 @@ sapply(list.files(file.path("R", "Functions"),
        echo = FALSE, 
        prompt.echo = FALSE)
 
-# Load Data ---------------------------------------------------------------
-
-inputDT <- readRDS(file.path("Data", "inputDT.rds"))
-
-inputDT[, c('polNumb', 'claimNumbMD', 'claimSizeMD', 'claimSizeBI', 'age', 'density', 'carVal') := NULL]
-setnames(inputDT, 'claimNumbBI', 'claimNumber')
-setnames(inputDT, 'ageGrouped', 'age')
-setnames(inputDT, 'carValGrouped', 'carVal')
-setnames(inputDT, 'densityGrouped', 'density')
-
-isFactorDT(inputDT, ,T)
-isNumericDT(inputDT, ,T)
-
-vars <- c('age', 'density', 'carVal', 'uwYear', 'gender', 
-          'carType', 'carCat', 'job', 'group1', 'bm', 
-          'nYears', 'cover')
-
 # TransferFunctions -------------------------------------------------------
 
 baseClassTransferFunctions <- list(S1 = TransferFunction$new("S1", 

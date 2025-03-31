@@ -63,7 +63,7 @@ run_BPSO <- function(train,
                               k1 = k1, 
                               k2 = k2, 
                               seed = seed)
-  
+
   BPSO_run <- BPSO_swarm$run_process(retrieve_or_calculate_glm_coding, 
                                      max_stable = max_stable, 
                                      max_iter = max_iter,

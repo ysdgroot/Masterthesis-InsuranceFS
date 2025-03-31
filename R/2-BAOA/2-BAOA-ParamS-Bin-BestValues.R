@@ -13,7 +13,7 @@ dt_results_cv <- readRDS(get_file_location(algo = algo,
 best_results <- best_param_run(dt_results_cv)[AvgResult == max(AvgResult)]
 
 # continuous parameters
-avg_best_results <- best_results[ ,.(AvgBeta = mean(beta), 
+avg_best_results <- best_results[ ,.(AvgBeta =   mean(beta), 
                                       Avgk = mean(k), 
                                       AvgMinMoa = mean(minMoa), 
                                       AvgMaxMoa = mean(maxMoa),
@@ -29,7 +29,7 @@ best_results_BAOA <- data.table(beta = avg_best_results$AvgBeta,
                                 minMoa =avg_best_results$AvgMinMoa, 
                                 maxMoa = avg_best_results$AvgMaxMoa, 
                                 TransFunName = "V3", 
-                                Popsize = avg_best_results$AvgMaxMoa)
+                                Popsize = avg_best_results$AvgPopsize)
 
 save_location <- get_save_location(algo, order)
 

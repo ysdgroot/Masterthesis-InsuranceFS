@@ -113,9 +113,6 @@ run_GA <- function(train,
   variables_selected <- names(best_result$Position[1,])[best_result$Position[1,] == 1]
   results_output[["VariableSubset"]] <- variables_selected
   
-  
-  ### ConcProbTrainModel ####
-  
   # GLM Variable Modelling --------------------------------------------------
   
   # get the results when running the 'standard' GLM 
@@ -126,7 +123,7 @@ run_GA <- function(train,
                                            target_variable = target_variable, 
                                            distribution_model = distribution_model, 
                                            offset = offset, 
-                                           type = type, 
+                                           concProb_type = concProb_type, 
                                            nu = nu, 
                                            location_data = location_glm_results, 
                                            withMain = TRUE)
@@ -139,7 +136,7 @@ run_GA <- function(train,
   results_output["ConcProbTestGLM"] <- results_glm["ConcProbTestGLM"]
   
   ### AdditionalInfo ####
-  results_output["AdditionalInfo"] <- all_results
+  results_output["AdditionalInfo"] <- list(all_results)
   
   return(results_output)
 }

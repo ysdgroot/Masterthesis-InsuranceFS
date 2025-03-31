@@ -15,7 +15,7 @@ beta <- 5
 k <- seq(0.2, 0.4, 0.1)
 minMoa <- seq(0.2, 0.4, 0.1)
 maxMoa <- seq(0.6, 0.8, 0.1)
-pop_size <- 20
+pop_size <- 25
 
 base_tests <- expand.grid("beta" = beta, 
                           "k" = k, 
@@ -30,7 +30,7 @@ base_tests[, ID := .I]
 list_results <- list()
 
 # base parameters 
-max_iter <- 30 
+max_iter <- 100 
 max_stable <- 10
 withMain <- TRUE
 
