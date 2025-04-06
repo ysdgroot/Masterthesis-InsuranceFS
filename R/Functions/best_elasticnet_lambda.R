@@ -55,6 +55,7 @@ best_elasticnet_lambda <- function(train,
                          nfolds = nfolds, 
                          alpha = alpha, 
                          ...)
-  return(list("MinLambda" = model_cv$lambda.min, 
+  return(list("MinLambda" = model_cv$lambda.min,
+              "MaxLambda" = model_cv$lambda.1se, 
          "Model" = model_cv ))
 }

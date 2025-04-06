@@ -1,17 +1,49 @@
-#' Title
+#' Running function for the GA 
 #'
-#' @param train 
-#' @param test 
-#' @param variables 
-#' @param target_variable 
-#' @param distribution_model 
-#' @param list_arguments 
-#' @param order 
-#' @param offset 
-#' @param type 
-#' @param nu 
+#' @param train,test data.table with train/test data used to train the model or test the results 
+#' @param variables vector with character. 
+#' All the main variables to be used for the modelling. 
+#' These should be found as column names in `train` and `test` 
+#' @param target_variable character, 
+#' column name of the response variable. 
+#' Should be found in `train` and `test` 
+#' @param distribution_model object of class family, to be used for the GLM modelling. 
+#' @param order integer, 
+#' Order of the interactions.
+#' Recommend to keep this small, otherwise the model will take a long time to converge.  
+#' @param offset character or NULL, to indicate the offset of the GLM model. 
+#' @param nu positive integer. 
+#' Value used for the Concordance probability when it is performed on continuous version
+#' @param seed integer, for reproducibility
+#' @param concProb_type "bin" or "cont", 
+#' to indicate if the Concordance Probability should be performed on integers (bin) or continuous (cont) scale?
+#' @param withMain logical, if the Main variables should be included if the interaction is used. 
+#' This is only necessary when `order` is greater than 1
+#' @param location_glm_results NULL or folder location to indicate where certain results should be stored or retrieved. 
+#' 
+#' @param selection The type of selection process for the GA algorithm (see [GA::ga()])
+#' @param p_crossover Probability of crossover for the GA algorithm (see [GA::ga()])
+#' @param p_mutation Probability of mutation for the GA algorithm (see [GA::ga()])
+#' @param n_elits Number of elits to be kept for the next round (see [GA::ga()])
+#' @param pop_size Population size of the Population based algorithm. 
+#' @param max_stable Integer,
+#' Maximum number of iterations with the same result. 
+#' This is for early stopping the process. 
+#' @param max_iter Integer, 
+#' Maximum number of iterations
+#' @param ... Not used 
+#' @param parallel if the run should be done in parallel
+
 #'
-#' @returns
+#' @returns list with several values: 
+#' "VariableImportance": NULL or named list with the variable importance, 
+#' "VariableSubset" = NULL or subset of `variables`, selecting already the best variables 
+#' "ConcProbTrainModel" = The Concordance Probability of the Trained Model 
+#' "ConcProbTestModel" = The Concordance Probability of the Trained Model with Test data 
+#' "ConcProbTrainGLM" = NULL or Concordance Probability of the GLM Model using the selected VariableSubset, using the train data set
+#' "ConcProbTestGLM" = NULL or Concordance Probability of the GLM Model using the selected VariableSubset, using the test data set
+#' "Model" = NULL or the trained model. 
+#' "AdditionalInfo" = NULL or some additional information about the run
 #' @export
 run_GA <- function(train, 
                    test, 
@@ -65,7 +97,7 @@ run_GA <- function(train,
                  withMain = withMain,
                  location_data = location_glm_results,
                  nu = nu, 
-               concProb_type = concProb_type, 
+                 concProb_type = concProb_type, 
                type = "binary", # optimization data type
                population = gabin_Population,
                selection = selection, 

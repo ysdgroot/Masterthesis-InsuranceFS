@@ -11,15 +11,15 @@ source(file.path("R", "1-General Parameters.R"))
 
 # Setup -------------------------------------------------------------------
 
-run_GA_parameter_selection <-  FALSE
-run_BAOA_parameter_selection <- TRUE
+run_GA_parameter_selection <-  TRUE
+run_BAOA_parameter_selection <- FALSE
 run_BPSO_parameter_selection <- FALSE
 
 # Data Set to be used for the parameter selection 
-data_set_number <- 1 
+data_set_number <- 1
 
 # for the continuous concordance probability
-nu <- 100
+nu <- 500
 
 # Not test order 2, because it takes to long to test
 order_interaction <- 1
@@ -38,7 +38,6 @@ base_name_folder <- sprintf(base_name_folder,
                             data_set_number, 
                             "%s", 
                             order_interaction)
-
 
 # Import Data Set ---------------------------------------------------------
 
@@ -80,11 +79,17 @@ dt_selection <- data.table(NameSelection = name_selection,
                                          gabin_rwSelection, 
                                          gabin_tourSelection))
 
-base_tests_ga <- expand.grid("n_elits" = 3, 
-                             "pop_size" = pop_size, 
-                             "p_crossover" = 0.5, 
-                             "p_mutation" = 0.3, 
+base_tests_ga <- expand.grid("n_elits" = n_elits,
+                             "pop_size" = pop_size,
+                             "p_crossover" = p_crossover,
+                             "p_mutation" = p_mutation,
                              "NameSelection" = name_selection)
+
+# base_tests_ga <- expand.grid("n_elits" = 3,
+#                              "pop_size" = pop_size,
+#                              "p_crossover" = 0.5,
+#                              "p_mutation" = 0.3,
+#                              "NameSelection" = name_selection)
 
 setDT(base_tests_ga)
 
@@ -129,6 +134,9 @@ if (run_GA_parameter_selection) {
       n_elits <- base_tests_ga[i,]$n_elits
       selection <- base_tests_ga[i,]$Selection[[1]]
       
+      VH <- VariableHandler$new(variables = variables, 
+                                order = order_interaction)
+      
       # run the GA method 
       result_run <- run_GA(train = trainDT_fold, 
                            test = testDT_fold, 
@@ -144,9 +152,11 @@ if (run_GA_parameter_selection) {
                            max_iter = max_iter, 
                            order = order_interaction, 
                            offset = offset, 
-                           type = concProb_type, 
+                           concProb_type = concProb_type, 
                            location_glm_results = folder_name, 
                            parallel = run_parallel)
+      
+      
       
       # save the results 
       #number of iterations
@@ -214,12 +224,19 @@ minMoa <- seq(0.1, 0.4, 0.1)
 maxMoa <- seq(0.6, 0.9, 0.1)
 pop_size <- 25
 
-base_tests_baoa <- expand.grid("beta" = beta, 
-                               "k" = k, 
-                               "minMoa" = minMoa, 
-                               "maxMoa" = maxMoa, 
-                               "TransFun" = baseClassTransferFunctions, 
+base_tests_baoa <- expand.grid("beta" = beta,
+                               "k" = k,
+                               "minMoa" = minMoa,
+                               "maxMoa" = maxMoa,
+                               "TransFun" = baseClassTransferFunctions,
                                "Popsize" = pop_size)
+
+# base_tests_baoa <- expand.grid("beta" = 5, 
+#                                "k" = 0.5, 
+#                                "minMoa" = 0.1, 
+#                                "maxMoa" = 0.6, 
+#                                "TransFun" = baseClassTransferFunctions, 
+#                                "Popsize" = pop_size)
 
 setDT(base_tests_baoa)
 base_tests_baoa[, ID := .I]
@@ -276,7 +293,7 @@ if (run_BAOA_parameter_selection) {
                              max_iter = max_iter, 
                              order = order_interaction, 
                              offset = offset, 
-                             type = concProb_type, 
+                             concProb_type = concProb_type, 
                              location_glm_results = folder_name)
       
       # save the results 
@@ -345,11 +362,17 @@ k2 <- seq(1, 6, 0.5)
 w <- seq(0.1, 2.1, 0.5)
 pop_size <- 25
 
-base_tests_bpso <- expand.grid("k1" = k1, 
-                               "k2" = k2, 
-                               "w" = w, 
-                               "TransFun" = baseClassTransferFunctions, 
+base_tests_bpso <- expand.grid("k1" = k1,
+                               "k2" = k2,
+                               "w" = w,
+                               "TransFun" = baseClassTransferFunctions,
                                "Popsize" = pop_size)
+
+# base_tests_bpso <- expand.grid("k1" = 3,
+#                                "k2" = 3,
+#                                "w" = 1,
+#                                "TransFun" = baseClassTransferFunctions,
+#                                "Popsize" = pop_size)
 
 setDT(base_tests_bpso)
 base_tests_bpso[, ID := .I]
@@ -405,7 +428,7 @@ if (run_BPSO_parameter_selection) {
                              max_iter = max_iter, 
                              order = order_interaction, 
                              offset = offset, 
-                             type = concProb_type, 
+                             concProb_type = concProb_type, 
                              location_glm_results = folder_name)
       
       # save the results 

@@ -1,18 +1,22 @@
-#' Title
+#' Running function for the XGBoost 
 #'
-#' @param train 
-#' @param test 
-#' @param variables 
-#' @param target_variable 
-#' @param distribution_model 
-#' @param list_arguments 
-#' @param order 
-#' @param offset 
-#' @param concProb_type 
-#' @param nu 
-#' @param location_glm_results 
+#' @inheritParams run_GA 
+#' @param objective objective for `xgboost`
+#' @param booster booster for `xgboost`
+#' @param ... not used
+#' @param nrounds number of rounds in `xgboost`
+#' @param params extra parameters for `xgboost`
+#' @param nthread number of threads to use for `xgboost`
 #'
-#' @returns
+#' @returns list with several values: 
+#' "VariableImportance": NULL or named list with the variable importance, 
+#' "VariableSubset" = NULL or subset of `variables`, selecting already the best variables 
+#' "ConcProbTrainModel" = The Concordance Probability of the Trained Model 
+#' "ConcProbTestModel" = The Concordance Probability of the Trained Model with Test data 
+#' "ConcProbTrainGLM" = NULL or Concordance Probability of the GLM Model using the selected VariableSubset, using the train data set
+#' "ConcProbTestGLM" = NULL or Concordance Probability of the GLM Model using the selected VariableSubset, using the test data set
+#' "Model" = NULL or the trained model. 
+#' "AdditionalInfo" = NULL or some additional information about the run
 #' @export
 run_xgboost <- function(train, 
                         test, 

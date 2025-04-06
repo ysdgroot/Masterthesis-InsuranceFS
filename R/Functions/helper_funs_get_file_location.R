@@ -2,12 +2,14 @@
 # helper functions for the selection of the best values script
 
 get_save_location <- function(algo, 
-                              order){
+                              order, 
+                              data_set_number){
   
   save_location <- file.path("Data", 
                              "Parameters", 
-                             sprintf("Best_%s_order_%d.RDS",
+                             sprintf("Best_%s_Data%s_order_%s.RDS",
                                      algo,
+                                     data_set_number,
                                      order))
   return(save_location)
 }

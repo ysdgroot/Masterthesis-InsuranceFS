@@ -1,17 +1,22 @@
-#' Title
+#' Running function for the BAOA
 #'
-#' @param train 
-#' @param test 
-#' @param variables 
-#' @param target_variable 
-#' @param distribution_model 
-#' @param list_arguments 
-#' @param order 
-#' @param offset 
-#' @param concProb_type 
-#' @param nu 
+#' @inheritParams run_GA 
+#' @param beta Parameter beta for the BAOA algorithm
+#' @param k Parameter beta for the BAOA algorithm
+#' @param minMoa Parameter beta for the BAOA algorithm 
+#' @param maxMoa Parameter beta for the BAOA algorithm
+#' @param transferFun Transfunction object for the BAOA algorithm
+#' @param ... Not used
 #'
-#' @returns
+#' @returns list with several values: 
+#' "VariableImportance": NULL or named list with the variable importance, 
+#' "VariableSubset" = NULL or subset of `variables`, selecting already the best variables 
+#' "ConcProbTrainModel" = The Concordance Probability of the Trained Model 
+#' "ConcProbTestModel" = The Concordance Probability of the Trained Model with Test data 
+#' "ConcProbTrainGLM" = NULL or Concordance Probability of the GLM Model using the selected VariableSubset, using the train data set
+#' "ConcProbTestGLM" = NULL or Concordance Probability of the GLM Model using the selected VariableSubset, using the test data set
+#' "Model" = NULL or the trained model. 
+#' "AdditionalInfo" = NULL or some additional information about the run
 #' @export
 run_BAOA <- function(train, 
                    test, 
