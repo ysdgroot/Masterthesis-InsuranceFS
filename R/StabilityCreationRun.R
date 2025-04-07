@@ -6,13 +6,13 @@ source(file.path("R", "1-General Parameters.R")) # also loads the functions
 # Setup -------------------------------------------------------------------
 
 # Data Set to be used for the parameter selection 
-data_set_number <- 2
+data_set_number <- 1
 
 # for the continuous concordance probability
 nu <- 100
 
 # Order of interactions
-order_interaction <- 1
+order_interaction <- 2
 
 seed <- 123
 
@@ -53,6 +53,7 @@ save_results <- function(results,
                             data.table("Method" = method, 
                                        "Order" = order, 
                                        "RunNumber" = run_number, 
+                                       "Percentage" = percentage, 
                                        "VariableImportance" = var_importance, 
                                        "VariableSubset" = var_selection,
                                        "ConcProbTrainModel" = conc_train_model, 
@@ -82,8 +83,8 @@ get_best_param_MH <- function(method,
 
 
 ##### General #########-
-max_iter <- ifelse(order_interaction == 1, 30, 100)
-max_stable <- ifelse(order_interaction == 1, 10, 30)
+max_iter <- ifelse(order_interaction == 1, 30, 60)
+max_stable <- ifelse(order_interaction == 1, 10, 20)
 pop_size <- 25
 
 ##### GA  #########-
@@ -171,12 +172,6 @@ lambda_ridge <- get_lamba("ridge",
                           data_set_number = data_set_number, 
                           order_interaction = order_interaction)
 
-# Setup XGBoost -----------------------------------------------------------
-
-objective <- ifelse(distribution_model$family == "Gamma", "reg:gamma", "count:poisson") 
-booster <- "gbtree"
-nrounds <- ifelse(order_interaction == 1, 30, 100)
-
 # Data Loading ------------------------------------------------------------
 
 # import data set
@@ -191,6 +186,14 @@ distribution_model <- data_import[["Distribution"]]
 
 # remove unnecessary information
 rm(data_import)
+
+# Setup XGBoost -----------------------------------------------------------
+
+objective <- ifelse(distribution_model$family == "Gamma", "reg:gamma", "count:poisson") 
+booster <- "gbtree"
+nrounds <- ifelse(order_interaction == 1, 30, 60)
+
+# -------------------------------------------------------------------------
 
 # file to save the results to after each run 
 
@@ -228,7 +231,7 @@ for (perc in percentages) {
     # use the function, set seed for reproducibility
     ls_data <- partial_resample_data(data, 
                                      perc_value = perc, 
-                                     seed = 123 + 2*perc + i_run)
+                                     seed = seed + 2*perc + i_run)
     
     train_dt <- ls_data$Train
     test_dt <- ls_data$Test
@@ -386,7 +389,7 @@ for (perc in percentages) {
                                  location_glm_results = folder_name, 
                                  nu = nu, 
                                    alpha = 0.5, 
-                                   lambda = lambda_ridge)
+                                   lambda = lambda_elasticnet)
     
     # store the results 
     results <- save_results(results, 
@@ -416,7 +419,7 @@ for (perc in percentages) {
                                  location_glm_results = folder_name, 
                                  nu = nu, 
                                    alpha = 1, 
-                                   lambda = lambda_ridge)
+                                   lambda = lambda_lasso)
     
     # store the results 
     results <- save_results(results, 

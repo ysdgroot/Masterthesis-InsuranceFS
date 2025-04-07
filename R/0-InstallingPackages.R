@@ -28,3 +28,4 @@ install.packages("purrr")
 install.packages("matrixStats")
 install.packages("glmnet")
 
+devtools::install_github("ysdgroot/MHFS")

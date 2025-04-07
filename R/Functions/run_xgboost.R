@@ -7,6 +7,7 @@
 #' @param nrounds number of rounds in `xgboost`
 #' @param params extra parameters for `xgboost`
 #' @param nthread number of threads to use for `xgboost`
+#' @param perc_variable_selection Percentage of the total gain used for the variable selection (default 90%)
 #'
 #' @returns list with several values: 
 #' "VariableImportance": NULL or named list with the variable importance, 
@@ -25,6 +26,7 @@ run_xgboost <- function(train,
                         distribution_model, 
                         objective = "count:poisson",
                         booster = "gbtree", 
+                        perc_variable_selection = 0.9, 
                         ..., 
                         nrounds = 100, 
                         params = list(), 
@@ -33,6 +35,7 @@ run_xgboost <- function(train,
                         offset = "exposure", 
                         concProb_type = "bin", 
                         nu = 100, 
+                        withMain = TRUE, 
                         location_glm_results = NULL) {
 
   # Construction of the Variable Handler for the variables
@@ -94,8 +97,13 @@ run_xgboost <- function(train,
   results_output["VariableImportance"] <- list(importance)
   
   ### Variable Subset ####
-  # no variable subset
+  # calculate the cumulative result
+  var_importance_xgb[, CumGain := cumsum(Gain)]
+  # new threshold; just after perc_variable_selection
+  threshold <- var_importance_xgb[CumGain >= perc_variable_selection][["CumGain"]][1]
   
+  variables_selected <- var_importance_xgb[CumGain <= threshold][["Feature"]]
+  results_output[["VariableSubset"]] <- variables_selected
   ### ConcProbTrainModel ####
 
   predModel_train <- predict(trained_model, 
@@ -124,6 +132,24 @@ run_xgboost <- function(train,
   
   results_output["ConcProbTrainModel"] <- ConcProbTrainModel
   results_output["ConcProbTestModel"] <- ConcProbTestModel
+  
+  # GLM Variable Modelling --------------------------------------------------
+  
+  # get the results when running the 'standard' GLM 
+  results_glm <- retrieve_or_calculate_glm(train = train, 
+                                           test = test, 
+                                           VH = VH, 
+                                           variables = variables_selected, 
+                                           target_variable = target_variable, 
+                                           distribution_model = distribution_model, 
+                                           offset = offset, 
+                                           concProb_type = concProb_type, 
+                                           nu = nu, 
+                                           location_data = location_glm_results, 
+                                           withMain = withMain)
+  
+  results_output["ConcProbTrainGLM"] <- results_glm["ConcProbTrainGLM"]
+  results_output["ConcProbTestGLM"] <- results_glm["ConcProbTestGLM"]
   
   ### Model ####
   results_output["Model"] <- list(trained_model)

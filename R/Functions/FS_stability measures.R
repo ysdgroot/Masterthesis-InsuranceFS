@@ -15,6 +15,9 @@ jaccard_index <- function(s1, s2) {
 #' @returns correlation of 2 variables
 #' @export
 pearson_cor <- function(s1, s2) {
+  if(all(s1 == s2)) {
+    return(1)
+  }
   cor(s1, s2, method = "pearson")
 }
 
@@ -34,7 +37,7 @@ similarity_measure <- function(feature_sets,
   total_measures <- 0
   for (i in 1:M) {
     for (j in 1:M) {
-      if(i == j) {break}
+      if(i == j) {next}
       
       total_measures <- total_measures  +
         measure(feature_sets[[i]], feature_sets[[j]])
