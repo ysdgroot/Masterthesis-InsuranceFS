@@ -13,9 +13,9 @@
 #' Distribution
 #' @export
 retrieve_data_set <- function(data_set_number, 
-                              location = file.path("Data","Datasets")) {
+                              location = here::here("Data","DataSets")) {
   
-  return(readRDS(file = file.path(location, 
+  return(readRDS(file = here::here(location, 
                                   sprintf("DataSet_%s.RDS", 
                                           data_set_number))))
   

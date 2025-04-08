@@ -19,7 +19,7 @@ save_data <- function(data,
                       offset, 
                       concProb_type, 
                       data_set_number, 
-                      folder = file.path("Data", "DataSets")){
+                      folder = here::here("Data", "DataSets")){
   to_save <- list("Data" = data,
                   "Variables" = variables, 
                   "Target" = target_variable, 
@@ -27,7 +27,7 @@ save_data <- function(data,
                   "ConcProbType" = concProb_type, 
                   "Distribution" = distribution_model) 
   saveRDS(to_save, 
-          file = file.path(folder, 
+          file = here::here(folder, 
                            sprintf("DataSet_%s.RDS", 
                                    data_set_number)))
 }
@@ -37,13 +37,13 @@ save_data <- function(data,
 # Setup -------------------------------------------------------------------
 
 # Create a folder for the data sets
-dir.create(file.path("Data", "DataSets"), 
+dir.create(here::here("Data", "DataSets"), 
            showWarnings = FALSE)
 
 # Data Set 1 --------------------------------------------------------------
 
 # same as pg15training but already grouped for age and density
-inputDT <- readRDS(file.path("Data", "inputDT.rds"))
+inputDT <- readRDS(here::here("Data", "inputDT.rds"))
 
 inputDT[, c('polNumb', 'claimNumbMD', 'claimSizeMD', 'claimSizeBI', 'age', 'density', 'carVal') := NULL]
 setnames(inputDT, 'claimNumbBI', 'claimNumber')

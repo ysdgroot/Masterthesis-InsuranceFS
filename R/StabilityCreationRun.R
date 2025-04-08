@@ -1,7 +1,7 @@
 # Package loading ---------------------------------------------------------
 
-source(file.path("R", "0-Packages.R"))
-source(file.path("R", "1-General Parameters.R")) # also loads the functions
+source(here::here("R", "0-Packages.R"))
+source(here::here("R", "1-General Parameters.R")) # also loads the functions
 
 # Setup -------------------------------------------------------------------
 
@@ -17,12 +17,9 @@ order_interaction <- 2
 seed <- 123
 
 # all percentages to look at
-percentages <- seq(0.5, 1, by = 0.1)
+percentages <- seq(0.8, 1, by = 0.1)
 # number of runs per percentage
-n_runs <- 10 
-
-# not use a folder to save some results 
-folder_name <- NULL
+n_runs <- 5
 
 # table with
 ## Method (GA, BAOA, BPSO, Lasso, ElasticNet, Ridge, Xgboost, forward, backward)
@@ -69,7 +66,7 @@ save_results <- function(results,
 get_best_param_MH <- function(method, 
                               data_set_number, 
                               order_interaction = 1, 
-                              base_location = file.path("Data", 
+                              base_location = here::here("Data", 
                                                         "Parameters", 
                                                         "Best_%s_Data%s_order_%s.RDS")) {
   
@@ -140,7 +137,7 @@ transferFun_bpso <- baseClassTransferFunctions[transferFun_bpso][[1]]
 get_lamba <- function(method, 
                       data_set_number, 
                       order_interaction, 
-                      base_location_lambda = file.path("Data", 
+                      base_location_lambda = here::here("Data", 
                                                        "Parameters", 
                                                        "Best_%s_Data%s_order_%s.RDS")){
   
@@ -197,7 +194,7 @@ nrounds <- ifelse(order_interaction == 1, 30, 60)
 
 # file to save the results to after each run 
 
-file_name_save <- file.path("Data", 
+file_name_save <- here::here("Data", 
                             "StabilityRun", 
                             sprintf("Data_%s_order_%s.RDS", 
                                     data_set_number, 
@@ -227,6 +224,17 @@ for (perc in percentages) {
                     i_run, 
                     n_runs)))
     
+    # temporary location to save some results 
+    folder_name_glm <- here::here("Data", 
+                              sprintf("Data%sorder%perc%srun%s", 
+                                      data_set_number, 
+                                      order_interaction, 
+                                      perc, 
+                                      i_run))
+    
+    if (!dir.exists(folder_name_glm)) {dir.create(folder_name_glm)}
+    
+    
     # Creation of data sets 
     # use the function, set seed for reproducibility
     ls_data <- partial_resample_data(data, 
@@ -249,7 +257,7 @@ for (perc in percentages) {
                          order = order_interaction,
                          offset = offset,
                          type = concProb_type,
-                         location_glm_results = folder_name,
+                         location_glm_results = folder_name_glm,
                          parallel = run_parallel,
                          nu = nu,
                            selection = selection,
@@ -273,6 +281,9 @@ for (perc in percentages) {
                             conc_train_glm = result_run["ConcProbTrainGLM"],
                             conc_test_glm = result_run["ConcProbTestGLM"])
     
+    saveRDS(results, 
+            file = file_name_save) 
+    
     # Run for BAOA ######################################################
     
     cat(sprintf("\t 2-BAOA \n"))
@@ -285,7 +296,7 @@ for (perc in percentages) {
                          order = order_interaction, 
                          offset = offset, 
                          type = concProb_type, 
-                         location_glm_results = folder_name, 
+                         location_glm_results = folder_name_glm, 
                          nu = nu, 
                            beta = beta,
                            k = k, 
@@ -309,6 +320,9 @@ for (perc in percentages) {
                             conc_train_glm = result_run["ConcProbTrainGLM"], 
                             conc_test_glm = result_run["ConcProbTestGLM"])
     
+    saveRDS(results, 
+            file = file_name_save) 
+    
     # Run for BPSO ######################################################
     
     cat(sprintf("\t 3-BPSO \n"))
@@ -321,7 +335,7 @@ for (perc in percentages) {
                            order = order_interaction, 
                            offset = offset, 
                            type = concProb_type, 
-                           location_glm_results = folder_name, 
+                           location_glm_results = folder_name_glm, 
                            nu = nu, 
                              k1 = k1 , 
                              k2 = k2, 
@@ -344,6 +358,9 @@ for (perc in percentages) {
                             conc_train_glm = result_run["ConcProbTrainGLM"], 
                             conc_test_glm = result_run["ConcProbTestGLM"])
     
+    saveRDS(results, 
+            file = file_name_save) 
+    
     # Run for Elastic Net (alpha = 0) Ridge ######################################################
     
     cat(sprintf("\t 4-Ridge \n"))
@@ -356,7 +373,7 @@ for (perc in percentages) {
                                  order = order_interaction, 
                                  offset = offset, 
                                  type = concProb_type, 
-                                 location_glm_results = folder_name, 
+                                 location_glm_results = folder_name_glm, 
                                  nu = nu, 
                                   alpha = 0, 
                                   lambda = lambda_ridge)
@@ -374,6 +391,9 @@ for (perc in percentages) {
                             conc_train_glm = result_run["ConcProbTrainGLM"], 
                             conc_test_glm = result_run["ConcProbTestGLM"])
     
+    saveRDS(results, 
+            file = file_name_save) 
+    
     # Run for Elastic Net (alpha = 0.5) - Elastic Net ######################################################
     
     cat(sprintf("\t 5-Elastic Net \n"))
@@ -386,7 +406,7 @@ for (perc in percentages) {
                                  order = order_interaction, 
                                  offset = offset, 
                                  type = concProb_type, 
-                                 location_glm_results = folder_name, 
+                                 location_glm_results = folder_name_glm, 
                                  nu = nu, 
                                    alpha = 0.5, 
                                    lambda = lambda_elasticnet)
@@ -404,6 +424,9 @@ for (perc in percentages) {
                             conc_train_glm = result_run["ConcProbTrainGLM"], 
                             conc_test_glm = result_run["ConcProbTestGLM"])
     
+    saveRDS(results, 
+            file = file_name_save) 
+    
     # Run for Elastic Net (alpha = 1) - Lasso ######################################################
     
     cat(sprintf("\t 6-Lasso \n"))
@@ -416,7 +439,7 @@ for (perc in percentages) {
                                  order = order_interaction, 
                                  offset = offset, 
                                  type = concProb_type, 
-                                 location_glm_results = folder_name, 
+                                 location_glm_results = folder_name_glm, 
                                  nu = nu, 
                                    alpha = 1, 
                                    lambda = lambda_lasso)
@@ -434,6 +457,8 @@ for (perc in percentages) {
                             conc_train_glm = result_run["ConcProbTrainGLM"], 
                             conc_test_glm = result_run["ConcProbTestGLM"])
     
+    saveRDS(results, 
+            file = file_name_save) 
     
     # Run for XGBoost ######################################################
     
@@ -447,7 +472,7 @@ for (perc in percentages) {
                              order = order_interaction, 
                              offset = offset, 
                              type = concProb_type, 
-                             location_glm_results = folder_name,  
+                             location_glm_results = folder_name_glm,  
                              nu = nu, 
                                booster = booster, 
                                objective = objective, 
@@ -465,6 +490,9 @@ for (perc in percentages) {
                             conc_test_model= result_run["ConcProbTestModel"], 
                             conc_train_glm = result_run["ConcProbTrainGLM"], 
                             conc_test_glm = result_run["ConcProbTestGLM"])
+    
+    saveRDS(results, 
+            file = file_name_save) 
     # Run for Forward ######################################################
     
     cat(sprintf("\t 8-Forward \n"))
@@ -477,7 +505,7 @@ for (perc in percentages) {
                               order = order_interaction, 
                               offset = offset, 
                               type = concProb_type, 
-                              location_glm_results = folder_name,
+                              location_glm_results = folder_name_glm,
                               nu = nu, 
                                 type_run = "forward", 
                                 is_minimize = FALSE)
@@ -507,7 +535,7 @@ for (perc in percentages) {
     #                            order = order_interaction, 
     #                            offset = offset, 
     #                            type = concProb_type, 
-    #                            location_glm_results = folder_name,
+    #                            location_glm_results = folder_name_glm,
     #                            nu = nu, 
     #                              type_run = "backward", 
     #                              is_minimize = FALSE)

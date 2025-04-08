@@ -1,13 +1,13 @@
 
 # Package loading ---------------------------------------------------------
 
-source(file.path("R", "0-Packages.R"))
-source(file.path("R", "1-General Parameters.R"))
+source(here::here("R", "0-Packages.R"))
+source(here::here("R", "1-General Parameters.R"))
 
 
 # Data Sets loading -------------------------------------------------------
 
-#source(file.path("R", "1-DataSets.R"))
+#source(here::here("R", "1-DataSets.R"))
 
 # Setup -------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ seed <- 42
 nfolds <- 5
 run_parallel <- FALSE # only for the GA run
 
-base_name_folder <- file.path("Data", 
+base_name_folder <- here::here("Data", 
                               "DataSet%s_Fold%s_order%s")
 base_name_folder <- sprintf(base_name_folder, 
                             data_set_number, 
@@ -184,7 +184,7 @@ if (run_GA_parameter_selection) {
     
     # temporary store results
     saveRDS(rbindlist(list_results), 
-            sprintf(file.path("Data", 
+            sprintf(here::here("Data", 
                               "Parameters", 
                               "Param_GA_DataSet%s_order%s_Fold%s.RDS"), 
                     data_set_number, 
@@ -194,7 +194,7 @@ if (run_GA_parameter_selection) {
   
   dt_results_cv_ga <- rbindlist(list_results)
   
-  dir.create(file.path("Data", 
+  dir.create(here::here("Data", 
                        "Parameters"), 
              showWarnings = FALSE)
   
@@ -208,7 +208,7 @@ if (run_GA_parameter_selection) {
                    how = "left")
   
   saveRDS(dt_results_cv_ga, 
-          sprintf(file.path("Data", 
+          sprintf(here::here("Data", 
                             "Parameters", 
                             "Param_GA_DataSet%s_order%s.RDS"),
                   data_set_number, 
@@ -321,7 +321,7 @@ if (run_BAOA_parameter_selection) {
     
     # temporary store results
     saveRDS(rbindlist(list_results), 
-            sprintf(file.path("Data", 
+            sprintf(here::here("Data", 
                               "Parameters", 
                               "Param_BAOA_DataSet%s_order%s_Fold%s.RDS"), 
                     data_set_number, 
@@ -332,7 +332,7 @@ if (run_BAOA_parameter_selection) {
   
   dt_results_cv_baoa <- rbindlist(list_results)
   
-  dir.create(file.path("Data", 
+  dir.create(here::here("Data", 
                        "Parameters"), 
              showWarnings = FALSE)
   
@@ -347,7 +347,7 @@ if (run_BAOA_parameter_selection) {
                    how = "left")
   
   saveRDS(dt_results_cv_baoa, 
-          sprintf(file.path("Data", 
+          sprintf(here::here("Data", 
                             "Parameters", 
                             "Param_BAOA_DataSet%s_order%s.RDS"), 
                   data_set_number, 
@@ -456,7 +456,7 @@ if (run_BPSO_parameter_selection) {
     
     # temporary store results
     saveRDS(rbindlist(list_results), 
-            sprintf(file.path("Data", 
+            sprintf(here::here("Data", 
                               "Parameters", 
                               "Param_BPSO_DataSet%s_order%s_Fold%s.RDS"), 
                     data_set_number, 
@@ -466,7 +466,7 @@ if (run_BPSO_parameter_selection) {
   
   dt_results_cv_bpso <- rbindlist(list_results)
   
-  dir.create(file.path("Data", 
+  dir.create(here::here("Data", 
                        "Parameters"), 
              showWarnings = FALSE)
   
@@ -483,7 +483,7 @@ if (run_BPSO_parameter_selection) {
   
   # store the results
   saveRDS(dt_results_cv_bpso, 
-          sprintf(file.path("Data", 
+          sprintf(here::here("Data", 
                             "Parameters", 
                             "Param_BPSO_DataSet%s_order%s.RDS"), 
                   data_set_number, 

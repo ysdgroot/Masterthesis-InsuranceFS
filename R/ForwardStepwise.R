@@ -1,8 +1,8 @@
 # Load packages -----------------------------------------------------------
 # 
-# source(file.path("R", "Packages.R"))
-# source(file.path("R", "General Parameters.R"))
-# source(file.path("R", "Config-order2.R"))
+# source(here::here("R", "Packages.R"))
+# source(here::here("R", "General Parameters.R"))
+# source(here::here("R", "Config-order2.R"))
 
 # Forward -----------------------------------------------------------------
 
@@ -46,7 +46,7 @@ for (i_fold in 1:nfolds){
                          "bin", 
                          VH$get_length(), 
                          null_value)
-  full_folder_name <- file.path("Data", folder_name)
+  full_folder_name <- here::here("Data", folder_name)
   
   if (!dir.exists(full_folder_name)) {
     dir.create(full_folder_name, 

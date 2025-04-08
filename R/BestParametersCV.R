@@ -1,7 +1,7 @@
 # Loading packages and functions ------------------------------------------
-source(file.path("R", "0-Packages.R"))
+source(here::here("R", "0-Packages.R"))
 
-source(file.path("R", "1-General Parameters.R"))
+source(here::here("R", "1-General Parameters.R"))
 
 # General Setup -----------------------------------------------------------
 
@@ -12,7 +12,7 @@ order_interaction <- 1
 data_set_number <- 2
 
 # base name for collecting the results, %s are to be filled in with sprintf
-base_name_results <- sprintf(file.path("Data", 
+base_name_results <- sprintf(here::here("Data", 
                                        "Parameters", 
                                        "Param_%s_DataSet%s_order%s.RDS"), 
                              "%s", 
@@ -152,7 +152,7 @@ best_lamba <- best_elasticnet_lambda(data_used$Data,
 
 
 # base name for collecting the results, %s are to be filled in with sprintf
-file_location <- sprintf(file.path("Data", 
+file_location <- sprintf(here::here("Data", 
                                    "Parameters", 
                                    "Param_%s_DataSet%s_order%s.RDS"), 
                          algo, 
@@ -181,7 +181,7 @@ best_lamba <- best_elasticnet_lambda(data_used$Data,
 
 
 # base name for collecting the results, %s are to be filled in with sprintf
-file_location <- sprintf(file.path("Data", 
+file_location <- sprintf(here::here("Data", 
                                    "Parameters", 
                                    "Param_%s_DataSet%s_order%s.RDS"), 
                          algo, 
@@ -210,7 +210,7 @@ best_lamba <- best_elasticnet_lambda(data_used$Data,
 
 
 # base name for collecting the results, %s are to be filled in with sprintf
-file_location <- sprintf(file.path("Data", 
+file_location <- sprintf(here::here("Data", 
                                    "Parameters", 
                                    "Param_%s_DataSet%s_order%s.RDS"), 
                          algo, 

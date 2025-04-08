@@ -43,7 +43,7 @@ retrieve_or_calculate_glm <- function(train,
       stop(sprintf("The folder %s does not exist"))
     }
     
-    file_location <- file.path(location_data, 
+    file_location <- here::here(location_data, 
                                sprintf("%s.RDS", 
                                        paste(coding, 
                                              collapse = "")))

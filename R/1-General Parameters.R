@@ -1,8 +1,8 @@
 # Importing library and Functions --------------------------------------------
 
-source(file.path("R", "0-Packages.R"))
+source(here::here("R", "0-Packages.R"))
 # source all the functions in the folder Functions
-sapply(list.files(file.path("R", "Functions"), 
+sapply(list.files(here::here("R", "Functions"), 
                   pattern = "*.R", 
                   full.names = TRUE, 
                   recursive = TRUE), 

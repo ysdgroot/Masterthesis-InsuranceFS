@@ -5,7 +5,7 @@ get_save_location <- function(algo,
                               order, 
                               data_set_number){
   
-  save_location <- file.path("Data", 
+  save_location <- here::here("Data", 
                              "Parameters", 
                              sprintf("Best_%s_Data%s_order_%s.RDS",
                                      algo,
@@ -17,7 +17,7 @@ get_save_location <- function(algo,
 get_file_location <- function(algo, 
                               order, 
                               type = "bin"){
-  file_location <- file.path("Data", 
+  file_location <- here::here("Data", 
                              "Parameters", 
                              sprintf("Param_%s_%s_order%d.RDS",
                                      algo, 

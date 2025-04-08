@@ -67,7 +67,7 @@ concProb_glm_fastglm <- function(coding,
       stop(sprintf("The folder %s does not exist"))
     }
     
-    file_location <- file.path(location_save, 
+    file_location <- here::here(location_save, 
                                sprintf("%s.RDS", 
                                        paste(coding, 
                                              collapse = "")))
