@@ -155,7 +155,7 @@ distribution_model <- Gamma(link = "log")
 target_variable <- "ClaimCharge"
 offset <- NULL
 
-# Data set number 1
+# Data set number 3
 save_data(pg16trainclaim, 
           variables = vars, 
           target_variable = target_variable, 
@@ -164,9 +164,46 @@ save_data(pg16trainclaim,
           concProb_type = "cont", 
           data_set_number = 3)
 
-# # Data Set 4 --------------------------------------------------------------
+# Data Set 4 --------------------------------------------------------------
+
+# same as pg15training but already grouped for age and density
+inputDT <- readRDS(here::here("Data", "inputDT.rds"))
+
+inputDT[, c('polNumb', 'claimNumbMD', 'claimSizeMD', 'claimNumbBI', 'age', 'density', 'carVal') := NULL]
+setnames(inputDT, 'claimSizeBI', 'claimSize')
+setnames(inputDT, 'ageGrouped', 'age')
+setnames(inputDT, 'carValGrouped', 'carVal')
+setnames(inputDT, 'densityGrouped', 'density')
+
+isFactorDT(inputDT, ,T)
+isNumericDT(inputDT, ,T)
+
+vars <- c('age', 'density', 'carVal', 'uwYear', 'gender', 
+          'carType', 'carCat', 'job', 'group1', 'bm', 
+          'nYears', 'cover')
+
+inputDT <- inputDT[claimSize > 0]
+
+inputDT <- add_folds(inputDT, 
+                     nfolds = 5, 
+                     column = "claimSize")
+
+distribution_model <- Gamma(link = "log")
+target_variable <- "claimSize"
+offset <- NULL
+
+# Data set number 4
+save_data(inputDT, 
+          variables = vars, 
+          target_variable = target_variable, 
+          distribution_model = distribution_model, 
+          offset =offset, 
+          concProb_type = "cont", 
+          data_set_number = 4)
+
+# # Data Set 5 --------------------------------------------------------------
 # 
-# # Data set number 4 & 5
+# # Data set number 5 & 6
 # # claims and frequency 
 # data('beMTPL97')
 # setDT(beMTPL97)
@@ -183,7 +220,7 @@ save_data(pg16trainclaim,
 # distribution_model <- poisson()
 # 
 # 
-# # Data Set 5 --------------------------------------------------------------
+# # Data Set 6 --------------------------------------------------------------
 # 
 # ## Severity 
 # vars <- c()
