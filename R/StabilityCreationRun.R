@@ -33,6 +33,15 @@ n_runs <- 5
 ## ConcProbTrainGLM
 ## ConcProbTestGLM
 
+perform_runs <- list("GA" = FALSE, 
+                     "BAOA" = FALSE , 
+                     "BPSO" = TRUE, 
+                     "Ridge" = FALSE, 
+                     "Elastic Net" = FALSE, 
+                     "Lasso" = FALSE, 
+                     "XGBoost" = FALSE, 
+                     "Forward" = FALSE, 
+                     "Backward" = FALSE)
 
 save_results <- function(results, 
                          method, 
@@ -209,7 +218,6 @@ if (!file.exists(file_name_save)) {
   results <- readRDS(file = file_name_save)
 }
 
-
 # Start Tests -------------------------------------------------------------
 
 count_tests <- length(percentages) * n_runs
@@ -226,6 +234,9 @@ for (perc in percentages) {
     
     # temporary location to save some results 
     folder_name_glm <- here::here("Data", 
+                                  "ForAnalysis", 
+                                  sprintf("DataSet%s", 
+                                          data_set_number),
                               sprintf("Data%sorder%sperc%srun%s", 
                                       data_set_number, 
                                       order_interaction, 
@@ -244,22 +255,24 @@ for (perc in percentages) {
     train_dt <- ls_data$Train
     test_dt <- ls_data$Test
     
+    
     ## START RUNS
     # Run for GA ######################################################
     
-    cat(sprintf("\t 1-GA \n"))
-
-    result_run <- run_GA(train = train_dt,
-                         test = test_dt,
-                         variables = variables,
-                         target_variable = target_variable,
-                         distribution_model = distribution_model,
-                         order = order_interaction,
-                         offset = offset,
-                         concProb_type = concProb_type,
-                         location_glm_results = folder_name_glm,
-                         parallel = run_parallel,
-                         nu = nu,
+    if (perform_runs[["GA"]]) {
+      cat(sprintf("\t 1-GA \n"))
+      
+      result_run <- run_GA(train = train_dt,
+                           test = test_dt,
+                           variables = variables,
+                           target_variable = target_variable,
+                           distribution_model = distribution_model,
+                           order = order_interaction,
+                           offset = offset,
+                           concProb_type = concProb_type,
+                           location_glm_results = folder_name_glm,
+                           parallel = run_parallel,
+                           nu = nu,
                            selection = selection,
                            p_crossover = p_crossover,
                            p_mutation = p_mutation,
@@ -267,204 +280,31 @@ for (perc in percentages) {
                            pop_size = pop_size,
                            max_stable = max_stable,
                            max_iter = max_iter)
-
-    # store the results
-    results <- save_results(results,
-                            method = "GA",
-                            order = order_interaction,
-                            percentage = perc,
-                            run_number = i_run,
-                            var_importance = result_run["VariableImportance"],
-                            var_selection = result_run["VariableSubset"] ,
-                            conc_train_model= result_run["ConcProbTrainModel"],
-                            conc_test_model= result_run["ConcProbTestModel"],
-                            conc_train_glm = result_run["ConcProbTrainGLM"],
-                            conc_test_glm = result_run["ConcProbTestGLM"])
-    
-    saveRDS(results, 
-            file = file_name_save) 
+      
+      # store the results
+      results <- save_results(results,
+                              method = "GA",
+                              order = order_interaction,
+                              percentage = perc,
+                              run_number = i_run,
+                              var_importance = result_run["VariableImportance"],
+                              var_selection = result_run["VariableSubset"] ,
+                              conc_train_model= result_run["ConcProbTrainModel"],
+                              conc_test_model= result_run["ConcProbTestModel"],
+                              conc_train_glm = result_run["ConcProbTrainGLM"],
+                              conc_test_glm = result_run["ConcProbTestGLM"])
+      
+      saveRDS(results, 
+              file = file_name_save) 
+    }
     
     # Run for BAOA ######################################################
     
-    cat(sprintf("\t 2-BAOA \n"))
+    if (perform_runs[["BAOA"]]) {
     
-    result_run <- run_BAOA(train = train_dt, 
-                         test = test_dt, 
-                         variables = variables, 
-                         target_variable = target_variable, 
-                         distribution_model = distribution_model, 
-                         order = order_interaction, 
-                         offset = offset, 
-                         concProb_type = concProb_type, 
-                         location_glm_results = folder_name_glm, 
-                         nu = nu, 
-                           beta = beta,
-                           k = k, 
-                           minMoa = minMoa, 
-                           maxMoa = maxMoa, 
-                           transferFun = transferFun_baoa, 
-                           pop_size = pop_size, 
-                           max_stable = max_stable, 
-                           max_iter = max_iter)
-    
-    # store the results 
-    results <- save_results(results, 
-                            method = "BAOA", 
-                            order = order_interaction, 
-                            percentage = perc, 
-                            run_number = i_run, 
-                            var_importance = result_run["VariableImportance"], 
-                            var_selection = result_run["VariableSubset"] , 
-                            conc_train_model= result_run["ConcProbTrainModel"], 
-                            conc_test_model= result_run["ConcProbTestModel"], 
-                            conc_train_glm = result_run["ConcProbTrainGLM"], 
-                            conc_test_glm = result_run["ConcProbTestGLM"])
-    
-    saveRDS(results, 
-            file = file_name_save) 
-    
-    # Run for BPSO ######################################################
-    
-    cat(sprintf("\t 3-BPSO \n"))
-    
-    result_run <- run_BPSO(train = train_dt, 
-                           test = test_dt, 
-                           variables = variables, 
-                           target_variable = target_variable, 
-                           distribution_model = distribution_model,
-                           order = order_interaction, 
-                           offset = offset, 
-                           concProb_type = concProb_type, 
-                           location_glm_results = folder_name_glm, 
-                           nu = nu, 
-                             k1 = k1 , 
-                             k2 = k2, 
-                             w = w, 
-                             transferFun = transferFun_baoa, 
-                             pop_size = pop_size, 
-                             max_stable = max_stable, 
-                             max_iter = max_iter)
-    
-    # store the results 
-    results <- save_results(results, 
-                            method = "BPSO", 
-                            order = order_interaction, 
-                            percentage = perc, 
-                            run_number = i_run, 
-                            var_importance = result_run["VariableImportance"], 
-                            var_selection = result_run["VariableSubset"] , 
-                            conc_train_model= result_run["ConcProbTrainModel"], 
-                            conc_test_model= result_run["ConcProbTestModel"], 
-                            conc_train_glm = result_run["ConcProbTrainGLM"], 
-                            conc_test_glm = result_run["ConcProbTestGLM"])
-    
-    saveRDS(results, 
-            file = file_name_save) 
-    
-    # Run for Elastic Net (alpha = 0) Ridge ######################################################
-    
-    cat(sprintf("\t 4-Ridge \n"))
-    
-    result_run <- run_elasticNet(train = train_dt, 
-                                 test = test_dt, 
-                                 variables = variables, 
-                                 target_variable = target_variable, 
-                                 distribution_model = distribution_model,
-                                 order = order_interaction, 
-                                 offset = offset, 
-                                 concProb_type = concProb_type, 
-                                 location_glm_results = folder_name_glm, 
-                                 nu = nu, 
-                                  alpha = 0, 
-                                  lambda = lambda_ridge)
-    
-    # store the results 
-    results <- save_results(results, 
-                            method = "Ridge", 
-                            order = order_interaction, 
-                            percentage = perc, 
-                            run_number = i_run, 
-                            var_importance = result_run["VariableImportance"], 
-                            var_selection = result_run["VariableSubset"] , 
-                            conc_train_model= result_run["ConcProbTrainModel"], 
-                            conc_test_model= result_run["ConcProbTestModel"], 
-                            conc_train_glm = result_run["ConcProbTrainGLM"], 
-                            conc_test_glm = result_run["ConcProbTestGLM"])
-    
-    saveRDS(results, 
-            file = file_name_save) 
-    
-    # Run for Elastic Net (alpha = 0.5) - Elastic Net ######################################################
-    
-    cat(sprintf("\t 5-Elastic Net \n"))
-    
-    result_run <- run_elasticNet(train = train_dt, 
-                                 test = test_dt, 
-                                 variables = variables, 
-                                 target_variable = target_variable, 
-                                 distribution_model = distribution_model,
-                                 order = order_interaction, 
-                                 offset = offset, 
-                                 concProb_type = concProb_type, 
-                                 location_glm_results = folder_name_glm, 
-                                 nu = nu, 
-                                   alpha = 0.5, 
-                                   lambda = lambda_elasticnet)
-    
-    # store the results 
-    results <- save_results(results, 
-                            method = "ElasticNet", 
-                            order = order_interaction, 
-                            percentage = perc, 
-                            run_number = i_run, 
-                            var_importance = result_run["VariableImportance"], 
-                            var_selection = result_run["VariableSubset"] , 
-                            conc_train_model= result_run["ConcProbTrainModel"], 
-                            conc_test_model= result_run["ConcProbTestModel"], 
-                            conc_train_glm = result_run["ConcProbTrainGLM"], 
-                            conc_test_glm = result_run["ConcProbTestGLM"])
-    
-    saveRDS(results, 
-            file = file_name_save) 
-    
-    # Run for Elastic Net (alpha = 1) - Lasso ######################################################
-    
-    cat(sprintf("\t 6-Lasso \n"))
-    
-    result_run <- run_elasticNet(train = train_dt, 
-                                 test = test_dt, 
-                                 variables = variables, 
-                                 target_variable = target_variable, 
-                                 distribution_model = distribution_model,
-                                 order = order_interaction, 
-                                 offset = offset, 
-                                 concProb_type = concProb_type, 
-                                 location_glm_results = folder_name_glm, 
-                                 nu = nu, 
-                                   alpha = 1, 
-                                   lambda = lambda_lasso)
-    
-    # store the results 
-    results <- save_results(results, 
-                            method = "Lasso", 
-                            order = order_interaction, 
-                            percentage = perc, 
-                            run_number = i_run, 
-                            var_importance = result_run["VariableImportance"], 
-                            var_selection = result_run["VariableSubset"] , 
-                            conc_train_model= result_run["ConcProbTrainModel"], 
-                            conc_test_model= result_run["ConcProbTestModel"], 
-                            conc_train_glm = result_run["ConcProbTrainGLM"], 
-                            conc_test_glm = result_run["ConcProbTestGLM"])
-    
-    saveRDS(results, 
-            file = file_name_save) 
-    
-    # Run for XGBoost ######################################################
-    
-    cat(sprintf("\t 7-XGBoost \n"))
-    
-    result_run <- run_xgboost(train = train_dt, 
+        cat(sprintf("\t 2-BAOA \n"))
+        
+        result_run <- run_BAOA(train = train_dt, 
                              test = test_dt, 
                              variables = variables, 
                              target_variable = target_variable, 
@@ -472,90 +312,286 @@ for (perc in percentages) {
                              order = order_interaction, 
                              offset = offset, 
                              concProb_type = concProb_type, 
-                             location_glm_results = folder_name_glm,  
+                             location_glm_results = folder_name_glm, 
                              nu = nu, 
-                               booster = booster, 
-                               objective = objective, 
-                               nrounds = nrounds)
+                               beta = beta,
+                               k = k, 
+                               minMoa = minMoa, 
+                               maxMoa = maxMoa, 
+                               transferFun = transferFun_baoa, 
+                               pop_size = pop_size, 
+                               max_stable = max_stable, 
+                               max_iter = max_iter)
+        
+        # store the results 
+        results <- save_results(results, 
+                                method = "BAOA", 
+                                order = order_interaction, 
+                                percentage = perc, 
+                                run_number = i_run, 
+                                var_importance = result_run["VariableImportance"], 
+                                var_selection = result_run["VariableSubset"] , 
+                                conc_train_model= result_run["ConcProbTrainModel"], 
+                                conc_test_model= result_run["ConcProbTestModel"], 
+                                conc_train_glm = result_run["ConcProbTrainGLM"], 
+                                conc_test_glm = result_run["ConcProbTestGLM"])
+        
+        saveRDS(results, 
+                file = file_name_save) 
+    }
     
-    # store the results 
-    results <- save_results(results, 
-                            method = "XGBoost", 
-                            order = order_interaction, 
-                            percentage = perc, 
-                            run_number = i_run, 
-                            var_importance = result_run["VariableImportance"], 
-                            var_selection = result_run["VariableSubset"] , 
-                            conc_train_model= result_run["ConcProbTrainModel"], 
-                            conc_test_model= result_run["ConcProbTestModel"], 
-                            conc_train_glm = result_run["ConcProbTrainGLM"], 
-                            conc_test_glm = result_run["ConcProbTestGLM"])
+    # Run for BPSO ######################################################
     
-    saveRDS(results, 
-            file = file_name_save) 
+    if (perform_runs[["BPSO"]]) {
+        cat(sprintf("\t 3-BPSO \n"))
+        
+        result_run <- run_BPSO(train = train_dt, 
+                               test = test_dt, 
+                               variables = variables, 
+                               target_variable = target_variable, 
+                               distribution_model = distribution_model,
+                               order = order_interaction, 
+                               offset = offset, 
+                               concProb_type = concProb_type, 
+                               location_glm_results = folder_name_glm, 
+                               nu = nu, 
+                                 k1 = k1 , 
+                                 k2 = k2, 
+                                 w = w, 
+                                 transferFun = transferFun_baoa, 
+                                 pop_size = pop_size, 
+                                 max_stable = max_stable, 
+                                 max_iter = max_iter)
+        
+        # store the results 
+        results <- save_results(results, 
+                                method = "BPSO", 
+                                order = order_interaction, 
+                                percentage = perc, 
+                                run_number = i_run, 
+                                var_importance = result_run["VariableImportance"], 
+                                var_selection = result_run["VariableSubset"] , 
+                                conc_train_model= result_run["ConcProbTrainModel"], 
+                                conc_test_model= result_run["ConcProbTestModel"], 
+                                conc_train_glm = result_run["ConcProbTrainGLM"], 
+                                conc_test_glm = result_run["ConcProbTestGLM"])
+        
+        saveRDS(results, 
+                file = file_name_save) 
+    }
+    
+    # Run for Elastic Net (alpha = 0) Ridge ######################################################
+    
+    if (perform_runs[["Ridge"]]) {
+        cat(sprintf("\t 4-Ridge \n"))
+    
+        result_run <- run_elasticNet(train = train_dt,
+                                     test = test_dt,
+                                     variables = variables,
+                                     target_variable = target_variable,
+                                     distribution_model = distribution_model,
+                                     order = order_interaction,
+                                     offset = offset,
+                                     concProb_type = concProb_type,
+                                     location_glm_results = folder_name_glm,
+                                     nu = nu,
+                                      alpha = 0,
+                                      lambda = lambda_ridge)
+    
+        # store the results
+        results <- save_results(results,
+                                method = "Ridge",
+                                order = order_interaction,
+                                percentage = perc,
+                                run_number = i_run,
+                                var_importance = result_run["VariableImportance"],
+                                var_selection = result_run["VariableSubset"] ,
+                                conc_train_model= result_run["ConcProbTrainModel"],
+                                conc_test_model= result_run["ConcProbTestModel"],
+                                conc_train_glm = result_run["ConcProbTrainGLM"],
+                                conc_test_glm = result_run["ConcProbTestGLM"])
+    
+        saveRDS(results,
+                file = file_name_save)
+    }
+
+    # Run for Elastic Net (alpha = 0.5) - Elastic Net ######################################################
+
+    if (perform_runs[["Elastic Net"]]) {
+        cat(sprintf("\t 5-Elastic Net \n"))
+    
+        result_run <- run_elasticNet(train = train_dt,
+                                     test = test_dt,
+                                     variables = variables,
+                                     target_variable = target_variable,
+                                     distribution_model = distribution_model,
+                                     order = order_interaction,
+                                     offset = offset,
+                                     concProb_type = concProb_type,
+                                     location_glm_results = folder_name_glm,
+                                     nu = nu,
+                                       alpha = 0.5,
+                                       lambda = lambda_elasticnet)
+    
+        # store the results
+        results <- save_results(results,
+                                method = "ElasticNet",
+                                order = order_interaction,
+                                percentage = perc,
+                                run_number = i_run,
+                                var_importance = result_run["VariableImportance"],
+                                var_selection = result_run["VariableSubset"] ,
+                                conc_train_model= result_run["ConcProbTrainModel"],
+                                conc_test_model= result_run["ConcProbTestModel"],
+                                conc_train_glm = result_run["ConcProbTrainGLM"],
+                                conc_test_glm = result_run["ConcProbTestGLM"])
+    
+        saveRDS(results,
+                file = file_name_save)
+    }
+
+    # Run for Elastic Net (alpha = 1) - Lasso ######################################################
+
+    if (perform_runs[["Lasso"]]) {
+    cat(sprintf("\t 6-Lasso \n"))
+
+        result_run <- run_elasticNet(train = train_dt,
+                                     test = test_dt,
+                                     variables = variables,
+                                     target_variable = target_variable,
+                                     distribution_model = distribution_model,
+                                     order = order_interaction,
+                                     offset = offset,
+                                     concProb_type = concProb_type,
+                                     location_glm_results = folder_name_glm,
+                                     nu = nu,
+                                       alpha = 1,
+                                       lambda = lambda_lasso)
+    
+        # store the results
+        results <- save_results(results,
+                                method = "Lasso",
+                                order = order_interaction,
+                                percentage = perc,
+                                run_number = i_run,
+                                var_importance = result_run["VariableImportance"],
+                                var_selection = result_run["VariableSubset"] ,
+                                conc_train_model= result_run["ConcProbTrainModel"],
+                                conc_test_model= result_run["ConcProbTestModel"],
+                                conc_train_glm = result_run["ConcProbTrainGLM"],
+                                conc_test_glm = result_run["ConcProbTestGLM"])
+    
+        saveRDS(results,
+                file = file_name_save)
+    }
+
+    # Run for XGBoost ######################################################
+
+    if (perform_runs[["XGBoost"]]) {
+        cat(sprintf("\t 7-XGBoost \n"))
+    
+        result_run <- run_xgboost(train = train_dt,
+                                 test = test_dt,
+                                 variables = variables,
+                                 target_variable = target_variable,
+                                 distribution_model = distribution_model,
+                                 order = order_interaction,
+                                 offset = offset,
+                                 concProb_type = concProb_type,
+                                 location_glm_results = folder_name_glm,
+                                 nu = nu,
+                                   booster = booster,
+                                   objective = objective,
+                                   nrounds = nrounds)
+    
+        # store the results
+        results <- save_results(results,
+                                method = "XGBoost",
+                                order = order_interaction,
+                                percentage = perc,
+                                run_number = i_run,
+                                var_importance = result_run["VariableImportance"],
+                                var_selection = result_run["VariableSubset"] ,
+                                conc_train_model= result_run["ConcProbTrainModel"],
+                                conc_test_model= result_run["ConcProbTestModel"],
+                                conc_train_glm = result_run["ConcProbTrainGLM"],
+                                conc_test_glm = result_run["ConcProbTestGLM"])
+    
+        saveRDS(results,
+                file = file_name_save)
+    }
+    
+    
     # Run for Forward ######################################################
+
+    if (perform_runs[["Forward"]]) {
+        cat(sprintf("\t 8-Forward \n"))
     
-    cat(sprintf("\t 8-Forward \n"))
+        result_run <- run_stepwise(train = train_dt,
+                                  test = test_dt,
+                                  variables = variables,
+                                  target_variable = target_variable,
+                                  distribution_model = distribution_model,
+                                  order = order_interaction,
+                                  offset = offset,
+                                  concProb_type = concProb_type,
+                                  location_glm_results = folder_name_glm,
+                                  nu = nu,
+                                    type_run = "forward",
+                                    is_minimize = FALSE)
     
-    result_run <- run_stepwise(train = train_dt, 
-                              test = test_dt, 
-                              variables = variables, 
-                              target_variable = target_variable, 
-                              distribution_model = distribution_model,
-                              order = order_interaction, 
-                              offset = offset, 
-                              concProb_type = concProb_type, 
-                              location_glm_results = folder_name_glm,
-                              nu = nu, 
-                                type_run = "forward", 
-                                is_minimize = FALSE)
+        # store the results
+        results <- save_results(results,
+                                method = "Forward",
+                                order = order_interaction,
+                                percentage = perc,
+                                run_number = i_run,
+                                var_importance = result_run["VariableImportance"],
+                                var_selection = result_run["VariableSubset"] ,
+                                conc_train_model= result_run["ConcProbTrainModel"],
+                                conc_test_model= result_run["ConcProbTestModel"],
+                                conc_train_glm = result_run["ConcProbTrainGLM"],
+                                conc_test_glm = result_run["ConcProbTestGLM"])
+        
+        saveRDS(results, 
+                file = file_name_save)  
     
-    # store the results 
-    results <- save_results(results, 
-                            method = "Forward", 
-                            order = order_interaction, 
-                            percentage = perc, 
-                            run_number = i_run, 
-                            var_importance = result_run["VariableImportance"], 
-                            var_selection = result_run["VariableSubset"] , 
-                            conc_train_model= result_run["ConcProbTrainModel"], 
-                            conc_test_model= result_run["ConcProbTestModel"], 
-                            conc_train_glm = result_run["ConcProbTrainGLM"], 
-                            conc_test_glm = result_run["ConcProbTestGLM"])
+    }
     
     # Run for Backward ######################################################
     
-    # cat(sprintf("\t 9-Backward \n"))
-    # 
-    # result_run <- run_stepwise(train = train_dt, 
-    #                            test = test_dt, 
-    #                            variables = variables, 
-    #                            target_variable = target_variable, 
-    #                            distribution_model = distribution_model,
-    #                            order = order_interaction, 
-    #                            offset = offset, 
-    #                            type = concProb_type, 
-    #                            location_glm_results = folder_name_glm,
-    #                            nu = nu, 
-    #                              type_run = "backward", 
-    #                              is_minimize = FALSE)
-    # 
-    # # store the results 
-    # results <- save_results(results, 
-    #                         method = "Backward", 
-    #                         order = order_interaction, 
-    #                         percentage = perc, 
-    #                         run_number = i_run, 
-    #                         var_importance = result_run["VariableImportance"], 
-    #                         var_selection = result_run["VariableSubset"] , 
-    #                         conc_train_model= result_run["ConcProbTrainModel"], 
-    #                         conc_test_model= result_run["ConcProbTestModel"], 
-    #                         conc_train_glm = result_run["ConcProbTrainGLM"], 
-    #                         conc_test_glm = result_run["ConcProbTestGLM"])
+    if (perform_runs[["Backward"]]) {
+        cat(sprintf("\t 9-Backward \n"))
     
+        result_run <- run_stepwise(train = train_dt,
+                                   test = test_dt,
+                                   variables = variables,
+                                   target_variable = target_variable,
+                                   distribution_model = distribution_model,
+                                   order = order_interaction,
+                                   offset = offset,
+                                   type = concProb_type,
+                                   location_glm_results = folder_name_glm,
+                                   nu = nu,
+                                     type_run = "backward",
+                                     is_minimize = FALSE)
     
-  saveRDS(results, 
-          file = file_name_save)  
+        # store the results
+        results <- save_results(results,
+                                method = "Backward",
+                                order = order_interaction,
+                                percentage = perc,
+                                run_number = i_run,
+                                var_importance = result_run["VariableImportance"],
+                                var_selection = result_run["VariableSubset"] ,
+                                conc_train_model= result_run["ConcProbTrainModel"],
+                                conc_test_model= result_run["ConcProbTestModel"],
+                                conc_train_glm = result_run["ConcProbTrainGLM"],
+                                conc_test_glm = result_run["ConcProbTestGLM"])
+        
+        saveRDS(results, 
+                file = file_name_save)  
+    }
   } # end run numbers
 } # end run percentages
 
