@@ -19,7 +19,7 @@ run_BPSO_parameter_selection <- FALSE
 data_set_number <- 1
 
 # for the continuous concordance probability
-nu <- 500
+nu <- 100
 
 # Not test order 2, because it takes to long to test
 order_interaction <- 1
@@ -33,6 +33,7 @@ nfolds <- 5
 run_parallel <- FALSE # only for the GA run
 
 base_name_folder <- here::here("Data", 
+                               "ForParameterSelection", 
                               "DataSet%s_Fold%s_order%s")
 base_name_folder <- sprintf(base_name_folder, 
                             data_set_number, 
